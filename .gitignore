@@ -1,0 +1,17 @@
+# Secrets — KHÔNG commit
+.env
+
+# Virtual env
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Backup do installer tạo
+*.bak.*
+
+# Tài liệu nội bộ (máy-cá-nhân, client context) — không public
+docs/internal/
