@@ -160,12 +160,17 @@ def deep_sanitize(visual_obj: dict, mapping: dict[str, str]) -> None:
     sortDefinition, queryRef string...). Style giữ nguyên; apply_template sẽ rebind lại.
 
     Thay chuỗi theo tên DÀI TRƯỚC để tránh tên ngắn ăn mất một phần tên dài."""
+    import re as _re
     keys_desc = sorted(mapping.keys(), key=len, reverse=True)
+    # Tên file resource (logo/ảnh đăng ký trong registeredResources) cũng là thông tin
+    # nguồn — thay luôn (resource không resolve được cross-report nên không mất gì)
+    _img_re = _re.compile(r"[\w\-. %]+\.(png|jpe?g|gif|svg|bmp|webp)", _re.IGNORECASE)
 
     def repl_str(s: str) -> str:
         for k in keys_desc:
             if k in s:
                 s = s.replace(k, mapping[k])
+        s = _img_re.sub("TEMPLATE_IMAGE.png", s)
         return s
 
     def walk(node):

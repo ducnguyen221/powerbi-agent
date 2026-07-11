@@ -168,6 +168,15 @@ class TestPbir:
         assert "filterConfig" not in v
         assert "TEMPLATE_TABLE" in s
 
+    def test_deep_sanitize_image_resource_names(self):
+        from powerbi_agent import pbir
+        v = {"visual": {"visualType": "image", "objects": {"general": [
+            {"properties": {"imageUrl": {"expr": {"ResourcePackageItem": {
+                "ItemName": "client-logo47855673.png"}}}}}]}}}
+        pbir.deep_sanitize(v, {})
+        assert "client-logo" not in json.dumps(v)
+        assert "TEMPLATE_IMAGE.png" in json.dumps(v)
+
 
 class TestBackCompat:
     """Shim mcp_server_powerbi phải giữ nguyên bề mặt import cho host/cli."""
