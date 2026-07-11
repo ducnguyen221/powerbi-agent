@@ -62,7 +62,7 @@ Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`cli.py`), skill mô
 - [x] Test suite pytest (19 unit: util/adomd-probe/policy/back-compat) + GitHub Actions (windows runner, ruff + pytest, marker `integration` skip trên CI).
 - [x] Policy khung sẵn từ M0: `POWERBI_AGGREGATE_ONLY=1` bật chặn dump thô (mặc định tắt — M1 đảo mặc định + PII blocklist + audit).
 - [x] Cài `microsoft/powerbi-modeling-mcp` song song (✔ Connected); doc phân vai trong README + SKILL.md.
-- [ ] Merge nhánh nâng cấp từ máy thứ hai (TOM tools: `add_measure_local`, `add_relationship_local`, distill schema) — đổi tên `distill_report_model` → `distill_model_schema`. *(chờ máy kia push lên repo)*
+- [x] Merge nhánh nâng cấp từ máy thứ hai (branch `tom-tools`, port vào package): TOM loader + `add_measure_local` + `add_relationship_local` (`tools_tom.py`, fallback — bulk/TMDL vẫn delegate modeling-mcp) + `distill_model_schema` (`tools_distill.py`, đổi tên từ `distill_report_model`; đích ghi mặc định `~/.powerbi-agent/distilled/` NGOÀI repo, cấu hình qua `POWERBI_DISTILL_DIR`).
 
 ### M1 — Policy + Discovery (an toàn dữ liệu)
 

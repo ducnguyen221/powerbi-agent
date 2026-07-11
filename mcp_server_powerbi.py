@@ -11,7 +11,7 @@ import sys
 # Đảm bảo package tìm được khi chạy trực tiếp `python mcp_server_powerbi.py`
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from powerbi_agent.app import ADOMD_LOADED, main, mcp  # noqa: F401
+from powerbi_agent.app import ADOMD_LOADED, TABULAR_LOADED, main, mcp  # noqa: F401
 from powerbi_agent.discovery import find_active_pbi_ports  # noqa: F401 — cli.py dùng
 from powerbi_agent.util import MAX_ROWS, log  # noqa: F401
 

@@ -6,10 +6,11 @@ vì pyadomd resolve assembly AdomdClient ngay lúc import.
 
 import os
 
-from powerbi_agent.adomd import load_adomd
+from powerbi_agent.adomd import load_adomd, load_tabular
 from powerbi_agent.util import log  # noqa: F401 — khởi tạo logging stderr sớm
 
 ADOMD_LOADED = load_adomd()
+TABULAR_LOADED = load_tabular()
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
@@ -21,9 +22,11 @@ load_dotenv(os.path.join(_REPO_ROOT, ".env"))
 # Khởi tạo MCP Server với tên gọi định danh (giữ nguyên tên từ v0 — host đã đăng ký)
 mcp = FastMCP("PowerBI-Bridge-Server")
 
-from powerbi_agent import tools_query  # sau load_adomd()
+from powerbi_agent import tools_distill, tools_query, tools_tom  # sau load_adomd()
 
 tools_query.register(mcp)
+tools_tom.register(mcp, TABULAR_LOADED)
+tools_distill.register(mcp)
 
 
 def main():

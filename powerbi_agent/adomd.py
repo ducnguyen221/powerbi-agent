@@ -87,3 +87,41 @@ def load_adomd():
             e,
         )
         return False
+
+
+TABULAR_DLL = "Microsoft.AnalysisServices.Tabular.dll"
+
+
+def load_tabular():
+    """Thử nạp Microsoft.AnalysisServices.Tabular (TOM — đường GHI model). Trả về True nếu thành công.
+
+    Dò cùng bộ thư mục ứng viên với ADOMD (SSMS ship cả 2 DLL cạnh nhau).
+    """
+    try:
+        import clr
+    except Exception as e:
+        log.warning("Không import được pythonnet/clr (%s).", e)
+        return False
+
+    for d in candidate_adomd_dirs():
+        if os.path.exists(os.path.join(d, TABULAR_DLL)):
+            if d not in sys.path:
+                sys.path.append(d)
+            try:
+                clr.AddReference("Microsoft.AnalysisServices.Tabular")
+                log.info("Đã nạp Microsoft.AnalysisServices.Tabular từ: %s", d)
+                return True
+            except Exception:
+                continue
+
+    try:
+        clr.AddReference("Microsoft.AnalysisServices.Tabular")
+        log.info("Đã nạp Microsoft.AnalysisServices.Tabular từ GAC.")
+        return True
+    except Exception as e:
+        log.warning(
+            "Chưa nạp được Microsoft.AnalysisServices.Tabular (%s). "
+            "Các tool GHI local (TOM: add_measure_local, add_relationship_local) sẽ báo lỗi.",
+            e,
+        )
+        return False

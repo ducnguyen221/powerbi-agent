@@ -88,10 +88,31 @@ class TestBackCompat:
         assert callable(m.find_active_pbi_ports)
         assert hasattr(m, "mcp") and hasattr(m, "ADOMD_LOADED")
 
-    def test_three_tools_registered(self):
+    def test_six_tools_registered(self):
         import asyncio
 
         import mcp_server_powerbi as m
         tools = asyncio.run(m.mcp.list_tools())
         names = {t.name for t in tools}
-        assert {"list_local_reports", "execute_dax_local", "execute_dax_service"} <= names
+        assert {
+            "list_local_reports", "execute_dax_local", "execute_dax_service",
+            "add_measure_local", "add_relationship_local", "distill_model_schema",
+        } <= names
+
+
+class TestDistill:
+    def test_output_dir_param_wins(self, monkeypatch):
+        from powerbi_agent.tools_distill import _resolve_output_dir
+        monkeypatch.setenv("POWERBI_DISTILL_DIR", "C:/env-dir")
+        assert _resolve_output_dir("C:/param-dir") == "C:/param-dir"
+
+    def test_output_dir_env_fallback(self, monkeypatch):
+        from powerbi_agent.tools_distill import _resolve_output_dir
+        monkeypatch.setenv("POWERBI_DISTILL_DIR", "C:/env-dir")
+        assert _resolve_output_dir(None) == "C:/env-dir"
+
+    def test_output_dir_default_outside_repo(self, monkeypatch):
+        from powerbi_agent.tools_distill import _resolve_output_dir
+        monkeypatch.delenv("POWERBI_DISTILL_DIR", raising=False)
+        out = _resolve_output_dir(None)
+        assert ".powerbi-agent" in out  # NGOÀI repo — không commit schema khách
