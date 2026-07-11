@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "powerbi-agent"
+version = "0.1.0"
+description = "MCP server + skills for AI agents to work directly with Power BI — DAX query with data-safety policy, PBIR report templates, end-to-end analysis pipeline"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Duc Nguyen (ducnguyen221)" }]
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.27",
+    "pyadomd>=0.1.1",
+    "pythonnet>=3.0",
+    "pandas>=2.2",
+    "msal>=1.31",
+    "python-dotenv>=1.0",
+    "requests>=2.32",
+    "tabulate>=0.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+powerbi-agent = "powerbi_agent.app:main"
+
+[project.urls]
+Repository = "https://github.com/ducnguyen221/powerbi-agent"
+
+[tool.setuptools]
+packages = ["powerbi_agent"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+# E402: import sau code là CHỦ ĐÍCH (load_adomd phải chạy trước import pyadomd)
+ignore = ["E402"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: cần Power BI Desktop đang mở (bỏ qua trên CI)",
+]

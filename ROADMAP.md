@@ -57,11 +57,12 @@ Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`cli.py`), skill mô
 
 ### M0 — Nền sản phẩm
 
-- [ ] Tách `mcp_server_powerbi.py` → package `server/` (tools_query · tools_pbir · tools_template · tools_tom · policy).
-- [ ] `pyproject.toml` + version + `pip install -e .`; đổi entry đăng ký host theo package.
-- [ ] Test suite pytest (unit cho policy/PBIR parser; integration đánh dấu cần Desktop mở) + GitHub Actions (windows runner, lint + unit).
-- [ ] Cài `microsoft/powerbi-modeling-mcp` song song; doc phân vai (modeling → MS, query/report/policy → repo này).
-- [ ] Merge nhánh nâng cấp từ máy thứ hai (TOM tools: `add_measure_local`, `add_relationship_local`, distill schema) — đổi tên `distill_report_model` → `distill_model_schema`.
+- [x] Tách `mcp_server_powerbi.py` → package `powerbi_agent/` (util · adomd · discovery · tools_query · policy · app); `mcp_server_powerbi.py` giữ làm shim back-compat — host config KHÔNG phải đổi.
+- [x] `pyproject.toml` v0.1.0 + entry `powerbi-agent`; `requirements.txt` giữ cho installer.
+- [x] Test suite pytest (19 unit: util/adomd-probe/policy/back-compat) + GitHub Actions (windows runner, ruff + pytest, marker `integration` skip trên CI).
+- [x] Policy khung sẵn từ M0: `POWERBI_AGGREGATE_ONLY=1` bật chặn dump thô (mặc định tắt — M1 đảo mặc định + PII blocklist + audit).
+- [x] Cài `microsoft/powerbi-modeling-mcp` song song (✔ Connected); doc phân vai trong README + SKILL.md.
+- [ ] Merge nhánh nâng cấp từ máy thứ hai (TOM tools: `add_measure_local`, `add_relationship_local`, distill schema) — đổi tên `distill_report_model` → `distill_model_schema`. *(chờ máy kia push lên repo)*
 
 ### M1 — Policy + Discovery (an toàn dữ liệu)
 

@@ -62,8 +62,22 @@ Bên máy mới: giải nén vào `%USERPROFILE%\.mcp\powerbi-mcp` → chạy `i
 | `skill/powerbi-mcp/SKILL.md` | Hướng dẫn agent dùng tool (cài cho cả 3 host) |
 | `README_CLIENTS.md` | Tham khảo cấu hình host **thủ công** (machine-agnostic) |
 
+## Chạy song song với `microsoft/powerbi-modeling-mcp` (khuyến nghị)
+
+powerbi-agent **delegate phần modeling** cho MCP chính chủ của Microsoft và tập trung vào query/policy/report layer:
+
+```bash
+claude mcp add powerbi-modeling -s user -- npx -y "@microsoft/powerbi-modeling-mcp@latest" --start
+```
+
+| Việc | Server |
+|---|---|
+| Query DAX + policy an toàn dữ liệu, schema discovery, report layer PBIR (M2) | **powerbi-agent** (repo này) |
+| Tạo/sửa measure/column/relationship, bulk ops, TMDL/PBIP, DAX validate | **powerbi-modeling** (Microsoft) |
+
 ## Bảo mật
 - `.env` thật không bao giờ bị ghi đè, không nằm trong gói chia sẻ. Tool DAX mặc định **read-only**, cắt 1000 dòng.
+- Policy `aggregate-only` (chặn `EVALUATE '<bảng>'` dump thô): bật bằng `POWERBI_AGGREGATE_ONLY=1` — M1 sẽ thành mặc định. Đây là guard chống rò rỉ sơ ý, không thay thế RLS.
 
 ## Gỡ cài
 ```powershell
