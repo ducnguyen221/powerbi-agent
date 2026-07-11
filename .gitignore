@@ -15,3 +15,6 @@ __pycache__/
 
 # Tài liệu nội bộ (máy-cá-nhân, client context) — không public
 docs/internal/
+
+# Policy thật theo máy/dự án (cột PII nhạy cảm) — không public
+policy.json

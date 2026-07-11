@@ -1,5 +1,6 @@
 """Unit tests — không cần Power BI Desktop hay ADOMD.NET."""
 
+import json
 import os
 import sys
 
@@ -74,10 +75,98 @@ class TestPolicy:
         allowed, _ = policy.check_dax(dax)
         assert allowed
 
-    def test_disabled_by_default(self, monkeypatch):
+    def test_opt_out_with_env_zero(self, monkeypatch):
         monkeypatch.setenv("POWERBI_AGGREGATE_ONLY", "0")
         allowed, _ = policy.check_dax("EVALUATE 'Sales'")
-        assert allowed  # M0: pass-through; M1 đảo mặc định
+        assert allowed
+
+
+class TestPolicyM1:
+    def test_default_is_on(self, monkeypatch):
+        monkeypatch.delenv("POWERBI_AGGREGATE_ONLY", raising=False)
+        allowed, reason = policy.check_dax("EVALUATE 'Sales'")
+        assert not allowed and "aggregate-only" in reason
+
+    def test_pii_blocklist_blocks(self, tmp_path, monkeypatch):
+        pf = tmp_path / "policy.json"
+        pf.write_text(
+            '{"blocked_columns": ["\'Khách hàng\'[Số điện thoại]"]}', encoding="utf-8"
+        )
+        monkeypatch.setenv("POWERBI_POLICY_FILE", str(pf))
+        monkeypatch.setenv("POWERBI_AUDIT_DIR", str(tmp_path / "audit"))
+        dax = "EVALUATE SUMMARIZECOLUMNS('Khách hàng'[Số điện thoại], \"n\", [Đếm KH])"
+        allowed, reason = policy.check_dax(dax)
+        assert not allowed and "PII blocklist" in reason
+        # audit đã ghi verdict blocked_pii
+        files = list((tmp_path / "audit").glob("*.jsonl"))
+        assert files and "blocked_pii" in files[0].read_text(encoding="utf-8")
+
+    def test_pii_allows_other_columns(self, tmp_path, monkeypatch):
+        pf = tmp_path / "policy.json"
+        pf.write_text('{"blocked_columns": ["[Số điện thoại]"]}', encoding="utf-8")
+        monkeypatch.setenv("POWERBI_POLICY_FILE", str(pf))
+        allowed, _ = policy.check_dax("EVALUATE SUMMARIZECOLUMNS('KH'[Phân khúc])")
+        assert allowed
+
+    def test_audit_never_breaks_query(self, monkeypatch):
+        monkeypatch.setenv("POWERBI_AUDIT_DIR", "Z:/duong/dan/khong/ton/tai")
+        policy.audit("t", "EVALUATE ROW(1)", "allowed", 1)  # không raise là PASS
+
+    def test_dimension_cap(self, monkeypatch):
+        monkeypatch.delenv("POWERBI_AGGREGATE_ONLY", raising=False)
+        df_dim = pd.DataFrame({"khu_vuc": ["A", "B"], "v": [1, 2]})
+        df_num = pd.DataFrame({"v": [1.0, 2.0]})
+        assert policy.cap_dimension_rows(df_dim, 1000) == policy.DIMENSION_ROW_CAP
+        assert policy.cap_dimension_rows(df_dim, 0) == policy.DIMENSION_ROW_CAP
+        assert policy.cap_dimension_rows(df_num, 1000) == 1000
+        monkeypatch.setenv("POWERBI_AGGREGATE_ONLY", "0")
+        assert policy.cap_dimension_rows(df_dim, 1000) == 1000
+
+
+class TestPbir:
+    def test_new_guid_format(self):
+        from powerbi_agent import pbir
+        g = pbir.new_guid()
+        assert len(g) == 20 and all(c in "0123456789abcdef" for c in g)
+
+    def test_projection_measure(self):
+        from powerbi_agent import pbir
+        p = pbir.projection("Measure", "Công thức", "Tổng TB")
+        assert p["field"]["Measure"]["Expression"]["SourceRef"]["Entity"] == "Công thức"
+        assert p["queryRef"] == "Công thức.Tổng TB" and p["nativeQueryRef"] == "Tổng TB"
+
+    def test_projection_rejects_bad_kind(self):
+        from powerbi_agent import pbir
+        with pytest.raises(ValueError):
+            pbir.projection("Hierarchy", "T", "C")
+
+    def test_rebind_replaces_role(self):
+        from powerbi_agent import pbir
+        v = {"visual": {"query": {"queryState": {"Data": {"projections": [{"queryRef": "Old.X"}]}}}}}
+        pbir.rebind_query_state(v, {"Data": [{"type": "Measure", "entity": "M", "property": "Doanh thu"}]})
+        projs = v["visual"]["query"]["queryState"]["Data"]["projections"]
+        assert len(projs) == 1 and projs[0]["queryRef"] == "M.Doanh thu"
+
+    def test_deep_sanitize_covers_style_refs(self):
+        from powerbi_agent import pbir
+        v = {
+            "visual": {
+                "visualType": "cardVisual",
+                "query": {"queryState": {"Data": {"projections": [
+                    {"field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Công thức"}},
+                               "Property": "TB PTM"}},
+                     "queryRef": "Công thức.TB PTM", "nativeQueryRef": "TB PTM"}]}}},
+                "visualContainerObjects": {"x": [{"sel": "Công thức.TB PTM"}]},
+            },
+            "filterConfig": {"filters": [{"field": "bí mật"}]},
+        }
+        e, p = pbir.collect_field_names(v)
+        m = pbir.build_sanitize_map(e, p)
+        pbir.deep_sanitize(v, m)
+        s = json.dumps(v, ensure_ascii=False)
+        assert "Công thức" not in s and "TB PTM" not in s
+        assert "filterConfig" not in v
+        assert "TEMPLATE_TABLE" in s
 
 
 class TestBackCompat:

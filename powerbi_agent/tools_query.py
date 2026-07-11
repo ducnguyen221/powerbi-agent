@@ -1,4 +1,4 @@
-"""Tool truy vấn: Desktop (ADOMD) + Service (REST). Đăng ký vào FastMCP qua register()."""
+"""Tool truy vấn: Desktop (ADOMD) + Service (REST) + schema discovery. Đăng ký qua register()."""
 
 import os
 
@@ -11,9 +11,13 @@ from powerbi_agent import policy
 from powerbi_agent.discovery import find_active_pbi_ports
 from powerbi_agent.util import MAX_ROWS, df_to_markdown_capped, log, short_err
 
+# MSAL app singleton — giữ token cache trong process, hết 1-round-trip-mỗi-call
+_msal_app = None
+
 
 def get_azure_token():
-    """Lấy Access Token từ Entra ID sử dụng Client ID/Secret từ file cấu hình."""
+    """Lấy Access Token từ Entra ID (client-credential). Cache token qua app singleton."""
+    global _msal_app
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
     tenant_id = os.getenv("TENANT_ID")
@@ -21,20 +25,34 @@ def get_azure_token():
     if not all([client_id, client_secret, tenant_id]):
         raise ValueError("Thiếu cấu hình CLIENT_ID, CLIENT_SECRET hoặc TENANT_ID trong file .env.")
 
-    authority = f"https://login.microsoftonline.com/{tenant_id}"
     scope = ["https://analysis.windows.net/powerbi/api/.default"]
+    if _msal_app is None:
+        _msal_app = ConfidentialClientApplication(
+            client_id,
+            client_secret=client_secret,
+            authority=f"https://login.microsoftonline.com/{tenant_id}",
+        )
 
-    app = ConfidentialClientApplication(client_id, client_secret=client_secret, authority=authority)
-    result = app.acquire_token_for_client(scopes=scope)
-
+    # acquire_token_for_client tự dùng cache của app trước, hết hạn mới gọi mạng
+    result = _msal_app.acquire_token_for_client(scopes=scope)
     if "access_token" in result:
         return result["access_token"]
-    else:
-        raise Exception(f"Không thể lấy token: {result.get('error_description')}")
+    raise Exception(f"Không thể lấy token: {result.get('error_description')}")
+
+
+def _query_df(port: str, model_id: str, query: str) -> pd.DataFrame:
+    conn_str = f"Provider=MSOLAP;Data Source=localhost:{port};Catalog={model_id};"
+    with Pyadomd(conn_str) as conn:
+        with conn.cursor().execute(query) as cur:
+            data = cur.fetchall()
+            if not data:
+                return pd.DataFrame()
+            columns = [desc[0] for desc in cur.description] if cur.description else None
+            return pd.DataFrame(data, columns=columns)
 
 
 def register(mcp):
-    """Đăng ký các tool truy vấn vào instance FastMCP."""
+    """Đăng ký các tool truy vấn + discovery vào instance FastMCP."""
 
     @mcp.tool()
     def list_local_reports() -> str:
@@ -45,7 +63,6 @@ def register(mcp):
 
         output = "Các báo cáo đang mở:\n"
         for inst in instances:
-            # Lấy tên Model thực tế thông qua việc truy vấn danh mục
             try:
                 conn_str = f"Provider=MSOLAP;Data Source=localhost:{inst['port']};"
                 with Pyadomd(conn_str) as conn:
@@ -59,29 +76,93 @@ def register(mcp):
         return output
 
     @mcp.tool()
+    def list_tables(port: str, model_id: str) -> str:
+        """
+        Liệt kê các bảng trong model đang mở (đã lọc bảng hệ thống LocalDateTable/DateTableTemplate).
+        - port / model_id: lấy từ list_local_reports.
+        """
+        try:
+            df = _query_df(port, model_id, "SELECT [Name], [Description] FROM $SYSTEM.TMSCHEMA_TABLES")
+            if df.empty:
+                return "Model không có bảng nào."
+            df = df[~df["Name"].str.startswith("LocalDateTable_") & ~df["Name"].str.startswith("DateTableTemplate_")]
+            return df_to_markdown_capped(df, 0)
+        except Exception as e:
+            log.exception("list_tables thất bại")
+            return f"Lỗi list_tables: {short_err(e)}"
+
+    @mcp.tool()
+    def describe_table(port: str, model_id: str, table_name: str) -> str:
+        """
+        Mô tả 1 bảng: danh sách cột (tên + kiểu dữ liệu) và các measure đặt trong bảng đó.
+        - port / model_id: lấy từ list_local_reports.
+        - table_name: tên bảng (lấy từ list_tables).
+        """
+        try:
+            df_t = _query_df(port, model_id, "SELECT [ID], [Name] FROM $SYSTEM.TMSCHEMA_TABLES")
+            row = df_t[df_t["Name"] == table_name]
+            if row.empty:
+                return f"Không tìm thấy bảng '{table_name}'. Dùng list_tables để xem danh sách."
+            table_id = row.iloc[0]["ID"]
+
+            df_c = _query_df(
+                port, model_id,
+                # LƯU Ý DMV: cột kiểu dữ liệu tên là [ExplicitDataType] — KHÔNG phải [DataType]
+                "SELECT [TableID], [ExplicitName], [ExplicitDataType] AS [DataType] FROM $SYSTEM.TMSCHEMA_COLUMNS",
+            )
+            # TOM DataType enum — xác nhận live qua RowNumber (luôn Int64=6)
+            dtype_map = {2: "String", 5: "Boolean", 6: "Int64", 8: "Double", 9: "DateTime",
+                         10: "Decimal", 17: "Binary", 19: "Unknown", 20: "Variant"}
+            out = [f"## Bảng `{table_name}`", "", "### Cột"]
+            cols = df_c[(df_c["TableID"] == table_id) & df_c["ExplicitName"].notna()]
+            cols = cols[~cols["ExplicitName"].str.startswith("RowNumber-")]  # cột nội bộ engine
+            if cols.empty:
+                out.append("*Không có cột tùy chỉnh.*")
+            else:
+                for _, c in cols.iterrows():
+                    out.append(f"- `{c['ExplicitName']}` ({dtype_map.get(c['DataType'], 'Unknown')})")
+
+            df_m = _query_df(
+                port, model_id,
+                "SELECT [TableID], [Name], [Expression] FROM $SYSTEM.TMSCHEMA_MEASURES",
+            )
+            meas = df_m[df_m["TableID"] == table_id] if not df_m.empty else pd.DataFrame()
+            out.append("")
+            out.append("### Measure trong bảng")
+            if meas.empty:
+                out.append("*Không có measure.*")
+            else:
+                for _, m in meas.iterrows():
+                    out.append(f"- `[{m['Name']}]` = `{str(m['Expression'])[:200]}`")
+            return "\n".join(out)
+        except Exception as e:
+            log.exception("describe_table thất bại")
+            return f"Lỗi describe_table: {short_err(e)}"
+
+    @mcp.tool()
     def execute_dax_local(port: str, model_id: str, dax_query: str, max_rows: int = MAX_ROWS) -> str:
         """
         Thực thi một truy vấn DAX trực tiếp lên báo cáo Power BI Desktop đang mở.
         - port: Cổng kết nối (ví dụ: '51234')
         - model_id: Tên catalog/model ID lấy từ công cụ list_local_reports
         - dax_query: Câu lệnh DAX (ví dụ: 'EVALUATE SUMMARIZECOLUMNS(...)')
-        - max_rows: Số dòng tối đa trả về (mặc định 1000). Đặt 0 để bỏ giới hạn.
+        - max_rows: Số dòng tối đa trả về (mặc định 1000; kết quả có cột dimension bị siết còn 200
+          khi policy aggregate-only bật). Đặt 0 để bỏ giới hạn mềm.
+        LƯU Ý POLICY: mặc định chặn dump bảng thô (EVALUATE 'Bảng' / ALL()) và cột trong PII blocklist.
         """
-        allowed, reason = policy.check_dax(dax_query)
+        allowed, reason = policy.check_dax(dax_query, tool="execute_dax_local")
         if not allowed:
             return reason
-        conn_str = f"Provider=MSOLAP;Data Source=localhost:{port};Catalog={model_id};"
         try:
-            with Pyadomd(conn_str) as conn:
-                with conn.cursor().execute(dax_query) as cur:
-                    data = cur.fetchall()
-                    if not data:
-                        return "Truy vấn thành công nhưng không có dữ liệu trả về."
-                    # Lấy tên cột thực tế từ cursor description
-                    columns = [desc[0] for desc in cur.description] if cur.description else None
-                    df = pd.DataFrame(data, columns=columns)
-                    return df_to_markdown_capped(df, max_rows)
+            df = _query_df(port, model_id, dax_query)
+            if df.empty:
+                policy.audit("execute_dax_local", dax_query, "allowed", 0)
+                return "Truy vấn thành công nhưng không có dữ liệu trả về."
+            policy.audit("execute_dax_local", dax_query, "allowed", len(df))
+            effective_max = policy.cap_dimension_rows(df, max_rows)
+            return df_to_markdown_capped(df, effective_max)
         except Exception as e:
+            policy.audit("execute_dax_local", dax_query, "error")
             log.exception("execute_dax_local thất bại")
             return f"Lỗi khi thực thi DAX cục bộ: {short_err(e)}"
 
@@ -91,9 +172,10 @@ def register(mcp):
         Truy vấn dữ liệu từ Dataset đã xuất bản trên Cloud Power BI Service thông qua REST API.
         - dataset_id: Mã GUID của dataset cần truy vấn.
         - dax_query: Câu lệnh DAX (ví dụ: 'EVALUATE SUMMARIZECOLUMNS(...)')
-        - max_rows: Số dòng tối đa trả về (mặc định 1000). Đặt 0 để bỏ giới hạn.
+        - max_rows: Số dòng tối đa trả về (mặc định 1000; siết 200 khi kết quả có cột dimension).
+        LƯU Ý POLICY: như execute_dax_local.
         """
-        allowed, reason = policy.check_dax(dax_query)
+        allowed, reason = policy.check_dax(dax_query, tool="execute_dax_service")
         if not allowed:
             return reason
         try:
@@ -102,10 +184,7 @@ def register(mcp):
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json"
             }
-
-            # Endpoint chính thức của Power BI để chạy DAX
             url = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/executeQueries"
-
             payload = {
                 "queries": [{"query": dax_query}],
                 "serializerSettings": {"includeNulls": True}
@@ -113,18 +192,22 @@ def register(mcp):
 
             response = requests.post(url, json=payload, headers=headers, timeout=(10, 60))
             if response.status_code != 200:
+                policy.audit("execute_dax_service", dax_query, "error")
                 return f"Lỗi gọi API Power BI (Code {response.status_code}): {short_err(response.text)}"
 
             res_data = response.json()
             tables = res_data.get('results', [{}])[0].get('tables', [])
             if not tables:
+                policy.audit("execute_dax_service", dax_query, "allowed", 0)
                 return "Không có dữ liệu trả về từ Dataset."
 
-            # Chuyển kết quả JSON sang bảng định dạng Markdown
             rows = tables[0].get('rows', [])
             df = pd.DataFrame(rows)
-            return df_to_markdown_capped(df, max_rows)
+            policy.audit("execute_dax_service", dax_query, "allowed", len(df))
+            effective_max = policy.cap_dimension_rows(df, max_rows)
+            return df_to_markdown_capped(df, effective_max)
 
         except Exception as e:
+            policy.audit("execute_dax_service", dax_query, "error")
             log.exception("execute_dax_service thất bại")
             return f"Lỗi kết nối Power BI Service: {short_err(e)}"

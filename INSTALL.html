@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hướng dẫn cài đặt Power BI MCP Bridge</title>
+<title>powerbi-agent — Hướng dẫn cài đặt</title>
 <style>
   :root{
     --bg:#0f1116; --card:#171a21; --card2:#1d212b; --ink:#e7eaf0; --muted:#9aa3b2;
@@ -21,7 +21,7 @@
          font-size:12px;letter-spacing:.5px;padding:4px 10px;border-radius:6px;text-transform:uppercase}
   h1{font-size:34px;margin:14px 0 8px;line-height:1.2}
   h1 .pbi{color:var(--accent)}
-  .sub{color:var(--muted);font-size:18px;max-width:680px}
+  .sub{color:var(--muted);font-size:18px;max-width:720px}
   h2{font-size:24px;margin:44px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
   h2 .n{color:var(--accent2);font-weight:800;margin-right:8px}
   h3{font-size:18px;margin:26px 0 8px;color:#cdd4e0}
@@ -58,150 +58,142 @@
 </style>
 </head>
 <body>
+
 <header>
   <div class="wrap">
-    <span class="badge">MCP · Portable Installer</span>
-    <h1><span class="pbi">Power BI</span> MCP Bridge — Hướng dẫn cài đặt</h1>
-    <p class="sub">Kết nối Power BI Desktop (cục bộ) &amp; Power BI Service (cloud) vào trợ lý AI
-       <b>Claude Code</b>, <b>Codex</b> và <b>Google Antigravity</b> — chỉ với một lệnh, chạy được trên máy bất kỳ.</p>
+    <span class="badge">v0.2 · MIT · Windows</span>
+    <h1><span class="pbi">powerbi-agent</span> — AI Agent làm việc trực tiếp với Power BI</h1>
+    <p class="sub">MCP server 11 tool + 2 skill: truy vấn DAX có <b>chính sách an toàn dữ liệu</b>,
+    dựng <b>trang báo cáo đẹp theo template</b>, và <b>quy trình phân tích end-to-end 9 khâu</b>.
+    Hỗ trợ Claude Code · Codex CLI · Google Antigravity.</p>
   </div>
 </header>
 
 <div class="wrap">
 
-  <div class="card">
-    <b>Bộ này làm gì?</b> Cài một MCP server Python chạy ngầm, cấp cho AI 3 công cụ truy vấn Power BI bằng DAX/DMV,
-    rồi tự đăng ký vào cả 3 trợ lý AI. Sau khi cài, bạn chỉ cần ra lệnh bằng tiếng Việt tự nhiên —
-    AI tự gọi công cụ, không cần mở terminal.
-    <div style="margin-top:12px">
-      <span class="pill">Windows 10/11</span>
-      <span class="pill">Python ≥ 3.11</span>
-      <span class="pill">Read-only mặc định</span>
-      <span class="pill">Không phụ thuộc máy gốc</span>
-    </div>
-  </div>
+<h2><span class="n">1</span>Yêu cầu hệ thống</h2>
+<table>
+  <tr><th>Thành phần</th><th>Ghi chú</th></tr>
+  <tr><td>Windows 10/11</td><td>Power BI Desktop chỉ có trên Windows</td></tr>
+  <tr><td>Python 3.11+</td><td><code>python --version</code> để kiểm tra</td></tr>
+  <tr><td>ADOMD.NET</td><td>Có sẵn nếu đã cài <b>SSMS</b> (bản 18–22 đều được), hoặc cài
+      <a href="https://learn.microsoft.com/en-us/analysis-services/client-libraries">Analysis Services client libraries</a>.
+      Trình cài tự dò mọi vị trí; ép đường dẫn bằng biến môi trường <code>ADOMD_LIB_DIR</code>.</td></tr>
+  <tr><td>Power BI Desktop</td><td>Bản cài thường hoặc Microsoft Store đều được</td></tr>
+  <tr><td>Node.js (tùy chọn)</td><td>Chỉ cần nếu chạy kèm <code>powerbi-modeling</code> của Microsoft (mục 5)</td></tr>
+</table>
 
-  <div class="grid">
-    <div class="card"><span class="tool">list_local_reports()</span><br><span style="color:var(--muted);font-size:14px">Quét các file <code>.pbix</code> đang mở, trả về port + tên model.</span></div>
-    <div class="card"><span class="tool">execute_dax_local()</span><br><span style="color:var(--muted);font-size:14px">Chạy DAX trực tiếp lên báo cáo Desktop đang mở (qua ADOMD.NET).</span></div>
-    <div class="card"><span class="tool">execute_dax_service()</span><br><span style="color:var(--muted);font-size:14px">Chạy DAX lên dataset đã publish trên cloud (qua REST API + Entra ID).</span></div>
-  </div>
+<h2><span class="n">2</span>Cài bằng AI Agent — 1 câu lệnh (khuyến nghị)</h2>
+<p>Dán câu này vào agent của bạn (Claude Code / Codex / Antigravity):</p>
+<pre><code>Clone https://github.com/ducnguyen221/powerbi-agent vào ~/.mcp/powerbi-mcp rồi chạy install.ps1 trong đó (đọc script trước khi chạy), sau đó restart MCP host.</code></pre>
+<p>Hoặc cài tay:</p>
+<pre><code>git clone https://github.com/ducnguyen221/powerbi-agent "%USERPROFILE%\.mcp\powerbi-mcp"
+cd "%USERPROFILE%\.mcp\powerbi-mcp"
+powershell -ExecutionPolicy Bypass -File .\install.ps1</code></pre>
 
-  <h2><span class="n">1</span>Yêu cầu trước khi cài</h2>
-  <table>
-    <tr><th>Thành phần</th><th>Bắt buộc?</th><th>Ghi chú</th></tr>
-    <tr><td>Windows 10/11</td><td>Có</td><td>Phần kết nối Power BI Desktop cục bộ chỉ chạy trên Windows.</td></tr>
-    <tr><td>Python ≥ 3.11</td><td>Có</td><td>Tải tại <a href="https://www.python.org/downloads/">python.org</a> — khi cài nhớ tick <b>“Add Python to PATH”</b>.</td></tr>
-    <tr><td>ADOMD.NET</td><td>Cho tool <i>local</i></td><td>Thường có sẵn nếu đã cài Power BI Desktop, Excel hoặc SSMS. Nếu thiếu, xem mục Sự cố.</td></tr>
-    <tr><td>Power BI Desktop</td><td>Cho tool <i>local</i></td><td>Phải <b>đang mở</b> ít nhất 1 file <code>.pbix</code> khi truy vấn.</td></tr>
-    <tr><td>Azure Entra ID App</td><td>Cho tool <i>cloud</i></td><td>Chỉ cần nếu dùng <code>execute_dax_service</code>. Điền vào file <code>.env</code> (xem mục 5).</td></tr>
-    <tr><td>Trợ lý AI</td><td>Có</td><td>Đã cài sẵn ít nhất một trong: Claude Code, Codex, hoặc Google Antigravity.</td></tr>
-  </table>
+<div class="card">
+  <h3>install.ps1 làm gì (in-place, chạy lại nhiều lần an toàn)</h3>
+  <div class="step"><div class="num">1</div><div class="body">Dựng <code>.venv</code> + cài dependencies (rebuild nếu venv copy từ máy khác bị hỏng)</div></div>
+  <div class="step"><div class="num">2</div><div class="body">Dò <b>ADOMD.NET + TOM</b> đa phiên bản (SSMS 18–22 / standalone / GAC)</div></div>
+  <div class="step"><div class="num">3</div><div class="body">Đăng ký MCP vào <b>cả 3 host</b> (Claude <code>~/.claude.json</code> · Codex <code>config.toml</code> · Antigravity <code>mcp_config.json</code>) — đường dẫn suy từ vị trí thư mục, giữ nguyên server khác, backup <code>.bak</code></div></div>
+  <div class="step"><div class="num">4</div><div class="body">Copy 2 skill <code>powerbi-mcp</code> + <code>pbi-pipeline</code> vào từng host</div></div>
+</div>
+<table>
+  <tr><th>Tham số</th><th>Ý nghĩa</th></tr>
+  <tr><td><code>-Hosts claude,codex,antigravity</code></td><td>Chọn host (mặc định cả ba)</td></tr>
+  <tr><td><code>-SkipVenv</code> / <code>-SkipHosts</code></td><td>Chỉ cập nhật host / chỉ dựng venv</td></tr>
+</table>
+<div class="warn">Cài xong phải <b>khởi động lại host</b> (Claude Code / Codex / Antigravity) để tool mới xuất hiện.</div>
 
-  <h2><span class="n">2</span>Cài đặt — một lệnh (in-place)</h2>
-  <p>Thư mục này <b>vừa là bản chạy, vừa là bộ cài</b>. Mở <b>PowerShell</b> ngay tại thư mục
-     (Shift + chuột phải vào vùng trống → <i>“Open PowerShell window here”</i>) và chạy:</p>
-  <pre><button class="copy">Copy</button><code>powershell -ExecutionPolicy Bypass -File .\install.ps1</code></pre>
-  <p>Thế là xong. Trình cài làm <b>ngay tại chỗ</b> (không sinh thư mục thứ hai):</p>
-  <ul>
-    <li>Tạo / kiểm tra môi trường Python riêng (<code>.venv</code>) &amp; cài toàn bộ thư viện.</li>
-    <li>Kiểm tra ADOMD.NET.</li>
-    <li>Đăng ký MCP vào <b>cả 3 host</b>, trỏ về <b>chính thư mục này</b> (gộp vào cấu hình có sẵn,
-        <b>không xoá</b> server khác, tự sao lưu <code>.bak</code>).</li>
-    <li>Cài file kỹ năng (SKILL.md) để AI biết cách dùng công cụ.</li>
-    <li>Chạy kiểm thử nhanh.</li>
-  </ul>
+<h2><span class="n">3</span>Kiểm tra sau cài</h2>
+<pre><code>claude mcp list        # phải thấy: powerbi-mcp-bridge ... ✔ Connected</code></pre>
+<p>Rồi mở 1 file <code>.pbix</code> bất kỳ trong Power BI Desktop và hỏi agent:</p>
+<pre><code>Liệt kê các báo cáo Power BI đang mở, cho tôi xem danh sách bảng và measure của model.</code></pre>
+<p>Agent gọi <span class="tool">list_local_reports</span> → <span class="tool">list_tables</span> →
+<span class="tool">describe_table</span> là cài đặt <span class="ok">thành công</span>.</p>
 
-  <div class="note"><b>Mang sang máy mới:</b> copy <b>cả thư mục</b> này (bỏ qua <code>\.venv\</code> và
-     <code>\.env\</code>), nên đặt vào <code>%USERPROFILE%\.mcp\powerbi-mcp</code> để giống hệt cấu hình gốc,
-     rồi chạy lại <code>install.ps1</code>. <code>.venv</code> sẽ được dựng lại tự động; đường dẫn trong cấu hình
-     host suy theo vị trí thư mục nên <b>không dính username máy cũ</b>.</div>
+<h2><span class="n">4</span>11 tool có gì</h2>
+<table>
+  <tr><th>Nhóm</th><th>Tool</th><th>Chức năng</th></tr>
+  <tr><td rowspan="3">Khám phá</td><td><code>list_local_reports</code></td><td>Báo cáo Desktop đang mở (port + model ID)</td></tr>
+  <tr><td><code>list_tables</code></td><td>Danh sách bảng (lọc bảng hệ thống)</td></tr>
+  <tr><td><code>describe_table</code></td><td>Cột + kiểu dữ liệu + measure của 1 bảng</td></tr>
+  <tr><td rowspan="2">Truy vấn 🛡️</td><td><code>execute_dax_local</code></td><td>DAX lên Desktop — qua policy an toàn dữ liệu</td></tr>
+  <tr><td><code>execute_dax_service</code></td><td>DAX lên Power BI Service (cần mục 6)</td></tr>
+  <tr><td rowspan="2">Ghi model</td><td><code>add_measure_local</code></td><td>Tạo/sửa measure qua TOM</td></tr>
+  <tr><td><code>add_relationship_local</code></td><td>Relationship Many-to-One qua TOM</td></tr>
+  <tr><td rowspan="3">Template 🎨</td><td><code>list_templates</code></td><td>Kit báo cáo có sẵn</td></tr>
+  <tr><td><code>apply_template</code></td><td>Dựng trang mới từ kit — style giữ nguyên 100%</td></tr>
+  <tr><td><code>distill_template</code></td><td>Trang đẹp → kit tái dùng (sanitize trước khi chia sẻ)</td></tr>
+  <tr><td>Tri thức</td><td><code>distill_model_schema</code></td><td>Model → blueprint Markdown + Mermaid ERD</td></tr>
+</table>
 
-  <h3>Tùy chọn nâng cao</h3>
-  <pre><button class="copy">Copy</button><code># Chỉ đăng ký Claude + Codex
-.\install.ps1 -Hosts claude,codex
+<h2><span class="n">5</span>Chạy kèm powerbi-modeling của Microsoft (khuyến nghị)</h2>
+<p>powerbi-agent <b>không xây lại modeling</b> — phần tạo/sửa hàng loạt table/column/measure/relationship,
+TMDL, validate DAX giao cho MCP chính chủ Microsoft:</p>
+<pre><code>claude mcp add powerbi-modeling -s user -- npx -y "@microsoft/powerbi-modeling-mcp@latest" --start</code></pre>
+<div class="note">Phân vai (skill đã dạy agent): <b>query + policy + template/report layer</b> → powerbi-agent ·
+<b>modeling ops</b> → powerbi-modeling. Không ghi 2 server cùng lúc lên 1 model.</div>
 
-# Chỉ cập nhật cấu hình host, không đụng venv
-.\install.ps1 -SkipVenv
+<h2><span class="n">6</span>Chính sách an toàn dữ liệu 🛡️</h2>
+<p>Nguyên tắc: <b>dữ liệu thô ở lại trong engine — chỉ kết quả tổng hợp vào context LLM.</b> Enforce ở server:</p>
+<table>
+  <tr><th>Lớp</th><th>Mặc định</th><th>Điều chỉnh</th></tr>
+  <tr><td>Chặn dump thô (<code>EVALUATE 'Bảng'</code>, <code>ALL()</code>)</td><td class="ok">BẬT</td><td><code>POWERBI_AGGREGATE_ONLY=0</code> để tắt</td></tr>
+  <tr><td>PII blocklist (cột cấm project)</td><td>Theo file</td><td>Copy <code>policy.example.json</code> → <code>policy.json</code>, liệt kê cột</td></tr>
+  <tr><td>Audit log JSONL</td><td class="ok">BẬT</td><td><code>~/.powerbi-agent/audit/</code> (đổi: <code>POWERBI_AUDIT_DIR</code>)</td></tr>
+  <tr><td>Trần 200 dòng cho kết quả có cột dimension</td><td class="ok">BẬT</td><td><code>POWERBI_DIMENSION_ROW_CAP</code></td></tr>
+</table>
+<div class="danger"><b>Trung thực về giới hạn:</b> đây là guard chống rò rỉ <i>sơ ý</i>. Bảo mật cứng =
+RLS trên model + service principal quyền tối thiểu. Chi tiết kiểm thử: <code>docs/UAT-REPORT.md</code>.</div>
 
-# Chỉ dựng venv, không tự sửa config host nào (tự cấu hình tay)
-.\install.ps1 -SkipHosts</code></pre>
+<h2><span class="n">7</span>Power BI Service (cloud — tùy chọn)</h2>
+<div class="step"><div class="num">1</div><div class="body">Tạo <b>Azure Entra ID App Registration</b>, cấp quyền Power BI Service API + add vào workspace</div></div>
+<div class="step"><div class="num">2</div><div class="body">Copy <code>.env.example</code> → <code>.env</code>, điền <code>TENANT_ID / CLIENT_ID / CLIENT_SECRET</code></div></div>
+<div class="step"><div class="num">3</div><div class="body">Hỏi agent: <i>"chạy DAX này lên dataset &lt;GUID&gt; trên Service"</i> → <span class="tool">execute_dax_service</span> (token có cache)</div></div>
+<div class="warn"><code>.env</code> KHÔNG commit, không nằm trong gói chia sẻ — trình cài không bao giờ ghi đè file thật.</div>
 
-  <div class="note">Chạy lại <code>install.ps1</code> nhiều lần là <b>an toàn</b> — nó cập nhật chứ không nhân bản cấu hình.</div>
+<h2><span class="n">8</span>Template kit &amp; quy trình 9 khâu</h2>
+<p><b>Luật sắt:</b> không bao giờ để agent tự dựng layout báo cáo từ đầu — luôn
+<span class="tool">apply_template</span> từ kit đã chứng minh (kit mẫu <code>templates/kpim-business-light</code>
+đi kèm: card KPI + combo chart + pivot + slicer + map, style đầy đủ).</p>
+<p>Trang nào bạn ưng → bảo agent <span class="tool">distill_template</span> đóng thành kit riêng —
+lần sau tái tạo đúng style đó trên dữ liệu khác.</p>
+<p>Dự án trọn gói ("dựng báo cáo từ dữ liệu X") → skill <code>pbi-pipeline</code> tự kích hoạt:
+kết nối → transform M → model → DAX → truy vấn → visual → trang → nâng cao → artifact, mỗi khâu có cổng kiểm.</p>
 
-  <h2><span class="n">3</span>Khởi động lại &amp; kiểm chứng</h2>
-  <div class="step"><div class="num">1</div><div class="body"><b>Khởi động lại</b> trợ lý AI vừa cài để nạp MCP mới (thoát hẳn rồi mở lại).</div></div>
-  <div class="step"><div class="num">2</div><div class="body">Với <b>Claude Code</b>, xác minh bằng lệnh:
-    <pre><button class="copy">Copy</button><code>claude mcp list</code></pre>
-    Phải thấy dòng <code>powerbi-mcp-bridge</code> trạng thái kết nối.</div></div>
-  <div class="step"><div class="num">3</div><div class="body">Mở 1 file <code>.pbix</code> trong Power BI Desktop, rồi ra lệnh cho AI:
-    <pre><button class="copy">Copy</button><code>Quét xem máy có báo cáo Power BI nào đang mở không.</code></pre>
-    AI sẽ tự gọi <code>list_local_reports</code> và trả về port + tên model. <span class="ok">✔ Hoạt động.</span></div></div>
+<h2><span class="n">9</span>Xử lý sự cố</h2>
+<table>
+  <tr><th>Triệu chứng</th><th>Cách xử lý</th></tr>
+  <tr><td>Tool báo thiếu ADOMD.NET</td><td>Cài SSMS hoặc AS client libraries; hoặc set <code>ADOMD_LIB_DIR</code> tới thư mục chứa <code>Microsoft.AnalysisServices.AdomdClient.dll</code></td></tr>
+  <tr><td><code>list_local_reports</code> rỗng</td><td>Power BI Desktop phải ĐANG MỞ 1 file; chờ vài giây sau khi mở để engine (msmdsrv) lên</td></tr>
+  <tr><td>Tool không xuất hiện trong agent</td><td>Restart host; kiểm tra <code>claude mcp list</code></td></tr>
+  <tr><td>Trang mới apply_template không thấy</td><td>File .pbip phải ĐÓNG khi apply; nếu đang mở → Đóng KHÔNG LƯU rồi mở lại (Ctrl+S phiên cũ sẽ đè mất trang)</td></tr>
+  <tr><td>Truy vấn bị chặn "aggregate-only"</td><td>Là chủ đích (chống dump thô). Viết lại bằng SUMMARIZECOLUMNS/TOPN/measure; thực sự cần thô → <code>POWERBI_AGGREGATE_ONLY=0</code></td></tr>
+  <tr><td>Sửa file .ps1 xong chạy lỗi lạ</td><td>File .ps1 phải UTF-8 <b>có BOM</b> (PowerShell 5.1 + tiếng Việt)</td></tr>
+</table>
 
-  <h2><span class="n">4</span>Dùng hằng ngày — ví dụ câu lệnh</h2>
-  <table>
-    <tr><th>Bạn nói với AI</th><th>AI tự làm gì</th></tr>
-    <tr><td>“Liệt kê các bảng trong báo cáo đang mở.”</td><td>Chạy <code>EVALUATE INFO.TABLES()</code> qua <code>execute_dax_local</code>.</td></tr>
-    <tr><td>“Tính tổng doanh thu theo khu vực.”</td><td>Sinh DAX <code>SUMMARIZECOLUMNS(...)</code> rồi chạy, trả bảng Markdown.</td></tr>
-    <tr><td>“Truy vấn dataset cloud có ID này: …”</td><td>Gọi <code>execute_dax_service</code> với GUID dataset.</td></tr>
-  </table>
-  <div class="note">Mặc định kết quả cắt còn <b>1000 dòng</b> để tránh tràn. AI sẽ tự dùng <code>TOPN</code>/bộ lọc khi khám phá.</div>
+<h2><span class="n">10</span>Mang sang máy khác / Gỡ cài</h2>
+<pre><code>powershell -ExecutionPolicy Bypass -File .\pack.ps1   # đóng zip sạch (loại .venv/.env/.git) ra Desktop
+.\uninstall.ps1                                        # gỡ khỏi host, giữ file
+.\uninstall.ps1 -RemoveVenv                            # gỡ + xóa venv</code></pre>
 
-  <h2><span class="n">5</span>(Tùy chọn) Cấu hình Power BI Service — Cloud</h2>
-  <p>Chỉ cần nếu bạn muốn truy vấn dataset đã publish lên cloud. Mở file <code>.env</code> trong thư mục cài
-     (<code>%USERPROFILE%\.mcp\powerbi-mcp\.env</code>) và điền 3 giá trị từ Azure Entra ID App Registration:</p>
-  <pre><button class="copy">Copy</button><code>TENANT_ID=your-azure-tenant-guid
-CLIENT_ID=your-entra-app-client-guid
-CLIENT_SECRET=your-entra-app-client-secret-value</code></pre>
-  <div class="danger"><b>Bảo mật:</b> Không bao giờ commit file <code>.env</code> lên git, không dán nội dung lên chat.
-     Phần Power BI Desktop (local) <b>không cần</b> file này.</div>
-
-  <h2><span class="n">6</span>Khắc phục sự cố</h2>
-
-  <h3>❌ “Không tìm thấy Python ≥ 3.11”</h3>
-  <p>Cài Python 3.12 từ <a href="https://www.python.org/downloads/">python.org</a>, nhớ tick <b>Add to PATH</b>, mở PowerShell mới rồi chạy lại.</p>
-
-  <h3>❌ Tool local lỗi “FileNotFoundException … AdomdClient.dll”</h3>
-  <p>Máy thiếu ADOMD.NET. Hai cách:</p>
-  <ul>
-    <li>Cài <b>“Analysis Services client libraries”</b> từ
-      <a href="https://learn.microsoft.com/analysis-services/client-libraries">trang Microsoft</a> (hoặc cài SSMS / Power BI Desktop).</li>
-    <li>Đã có DLL nhưng trình cài không dò ra: mở <code>.env</code>, bỏ comment dòng
-      <code>ADOMD_LIB_DIR=</code> và trỏ tới thư mục chứa <code>Microsoft.AnalysisServices.AdomdClient.dll</code>.</li>
-  </ul>
-
-  <h3>❌ AI không thấy công cụ Power BI</h3>
-  <p>Chưa khởi động lại host. Thoát hẳn trợ lý AI rồi mở lại. Với Claude Code, chạy <code>claude mcp list</code> để kiểm tra.</p>
-
-  <h3>❌ “list_local_reports” báo không có báo cáo</h3>
-  <p>Power BI Desktop chưa mở file <code>.pbix</code> nào, hoặc model chưa nạp xong. Mở file và đợi vài giây.</p>
-
-  <div class="warn"><b>Lưu ý port động:</b> Power BI Desktop đổi port mỗi lần mở. Nếu truy vấn lỗi kết nối,
-     bảo AI chạy lại <code>list_local_reports</code> để lấy port mới.</div>
-
-  <h2><span class="n">7</span>Gỡ cài đặt</h2>
-  <pre><button class="copy">Copy</button><code># Gỡ khỏi 3 host + xoá skill đã copy, GIỮ file + .venv + .env
-.\uninstall.ps1
-
-# Gỡ như trên + xoá luôn .venv (giải phóng dung lượng)
-.\uninstall.ps1 -RemoveVenv</code></pre>
-
-  <footer>
-    Power BI MCP Bridge · Portable Installer · Tài liệu nội bộ KPIM<br>
-    Mọi truy vấn mặc định <b>chỉ đọc (read-only)</b>. Backup cấu hình host được lưu dạng <code>*.bak.&lt;timestamp&gt;</code>.
-  </footer>
+<footer>
+  powerbi-agent · MIT · <a href="https://github.com/ducnguyen221/powerbi-agent">github.com/ducnguyen221/powerbi-agent</a>
+  · Roadmap: ROADMAP.md · UAT: docs/UAT-REPORT.md
+</footer>
 
 </div>
 
 <script>
-document.querySelectorAll('.copy').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    var code=btn.parentElement.querySelector('code').innerText;
-    navigator.clipboard.writeText(code).then(function(){
-      var old=btn.innerText;btn.innerText='Đã copy ✓';
-      setTimeout(function(){btn.innerText=old;},1500);
-    });
-  });
+document.querySelectorAll('pre').forEach(function(pre){
+  var btn = document.createElement('button');
+  btn.className = 'copy'; btn.textContent = 'Copy';
+  btn.onclick = function(){
+    navigator.clipboard.writeText(pre.querySelector('code').innerText);
+    btn.textContent = 'Đã copy!'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1500);
+  };
+  pre.appendChild(btn);
 });
 </script>
 </body>

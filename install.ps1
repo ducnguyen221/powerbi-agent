@@ -232,12 +232,18 @@ env = { PYTHONUNBUFFERED = "1" }
     }
 }
 function Install-Skill([string]$SkillRoot) {
-    $src = Join-Path $Root "skill\powerbi-mcp\SKILL.md"
-    if (-not (Test-Path $src)) { return }
-    $dst = Join-Path $SkillRoot "powerbi-mcp"
-    if (-not (Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
-    Copy-Item $src (Join-Path $dst "SKILL.md") -Force
-    Info "Skill -> $dst"
+    # Copy MỌI skill trong skill\<name>\SKILL.md (powerbi-mcp, pbi-pipeline, ...)
+    $skillBase = Join-Path $Root "skill"
+    if (-not (Test-Path $skillBase)) { return }
+    Get-ChildItem -Path $skillBase -Directory | ForEach-Object {
+        $src = Join-Path $_.FullName "SKILL.md"
+        if (Test-Path $src) {
+            $dst = Join-Path $SkillRoot $_.Name
+            if (-not (Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
+            Copy-Item $src (Join-Path $dst "SKILL.md") -Force
+            Info "Skill $($_.Name) -> $dst"
+        }
+    }
 }
 
 if ($SkipHosts) {

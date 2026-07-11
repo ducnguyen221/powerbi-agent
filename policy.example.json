@@ -1,0 +1,8 @@
+{
+  "$comment": "Copy thành policy.json (gitignored) và liệt kê cột PII cấm xuất vào context LLM. So khớp substring không phân biệt hoa thường trong câu DAX — nên ghi dạng đầy đủ 'Bảng'[Cột] để tránh chặn nhầm. Đường dẫn khác: env POWERBI_POLICY_FILE.",
+  "blocked_columns": [
+    "'Khách hàng'[Số điện thoại]",
+    "'Khách hàng'[CMND]",
+    "'Khách hàng'[Email]"
+  ]
+}

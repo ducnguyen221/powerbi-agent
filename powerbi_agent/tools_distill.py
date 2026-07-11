@@ -17,9 +17,11 @@ from pyadomd import Pyadomd
 from powerbi_agent.discovery import find_active_pbi_ports
 from powerbi_agent.util import log, short_err
 
+
+# TOM DataType enum (Microsoft.AnalysisServices.Tabular) — xác nhận live qua RowNumber (luôn Int64=6)
 _DATA_TYPE_MAP = {
-    2: "Int16", 3: "Int32", 6: "Decimal/Currency", 8: "Double/Float",
-    9: "DateTime", 10: "String", 11: "Boolean", 13: "Binary", 20: "Int64",
+    2: "String", 5: "Boolean", 6: "Int64", 8: "Double",
+    9: "DateTime", 10: "Decimal", 17: "Binary", 19: "Unknown", 20: "Variant",
 }
 
 
@@ -92,7 +94,9 @@ def register(mcp):
 
                 df_tables = get_df("SELECT [ID], [Name], [Description] FROM $SYSTEM.TMSCHEMA_TABLES")
                 df_columns = get_df(
-                    "SELECT [TableID], [ID] as [ColumnID], [ExplicitName] as [Name], [DataType], [Description] "
+                    # LƯU Ý DMV: cột kiểu dữ liệu tên là [ExplicitDataType] — KHÔNG phải [DataType]
+                    "SELECT [TableID], [ID] as [ColumnID], [ExplicitName] as [Name], "
+                    "[ExplicitDataType] as [DataType], [Description] "
                     "FROM $SYSTEM.TMSCHEMA_COLUMNS"
                 )
                 df_measures = get_df(
@@ -119,6 +123,7 @@ def register(mcp):
             if not df_columns.empty:
                 df_columns = df_columns[df_columns["TableID"].isin(valid_table_ids)]
                 df_columns = df_columns[df_columns["Name"].notna() & (df_columns["Name"] != "")]
+                df_columns = df_columns[~df_columns["Name"].str.startswith("RowNumber-")]  # cột nội bộ engine
                 column_id_to_name = dict(zip(df_columns["ColumnID"], df_columns["Name"]))
                 df_columns["DataTypeStr"] = df_columns["DataType"].map(_DATA_TYPE_MAP).fillna("Unknown")
 

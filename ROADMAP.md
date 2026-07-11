@@ -64,39 +64,32 @@ Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`cli.py`), skill mô
 - [x] Cài `microsoft/powerbi-modeling-mcp` song song (✔ Connected); doc phân vai trong README + SKILL.md.
 - [x] Merge nhánh nâng cấp từ máy thứ hai (branch `tom-tools`, port vào package): TOM loader + `add_measure_local` + `add_relationship_local` (`tools_tom.py`, fallback — bulk/TMDL vẫn delegate modeling-mcp) + `distill_model_schema` (`tools_distill.py`, đổi tên từ `distill_report_model`; đích ghi mặc định `~/.powerbi-agent/distilled/` NGOÀI repo, cấu hình qua `POWERBI_DISTILL_DIR`).
 
-### M1 — Policy + Discovery (an toàn dữ liệu)
+### M1 — Policy + Discovery (an toàn dữ liệu) — ✅ XONG 2026-07-12
 
-| Feature | Chi tiết |
-|---|---|
-| `aggregate_only` mode (mặc định BẬT) | Chặn `EVALUATE '<bảng>'` / `EVALUATE ALL(...)` trần; cho `SUMMARIZECOLUMNS`/`GROUPBY`/`TOPN(n≤cap)`/`ROW`/truy vấn thuần measure; thông điệp từ chối kèm hướng dẫn viết lại |
-| PII blocklist per-project (`policy.yaml`) | Cột cấm **project ra kết quả** (được dùng trong filter/measure — tính trên engine thì OK, kéo ra thì chặn) |
-| Row caps phân biệt | Kết quả có cột dimension: mặc định 200 · thuần measure: không giới hạn thực tế |
-| Audit log JSONL | timestamp · tool · DAX · số dòng · policy verdict — rà soát được |
-| `list_tables()` / `describe_table(name)` | Schema discovery qua INFO/DMV — agent hết phải thuộc lòng `$SYSTEM.TBSCHEMA_*` |
-| Token cache MSAL | Hết 1-round-trip-mỗi-call cho Service |
+- [x] `aggregate_only` mặc định BẬT (opt-out `POWERBI_AGGREGATE_ONLY=0`); chặn kèm hint viết lại.
+- [x] PII blocklist qua `policy.json` (gitignored; mẫu `policy.example.json`; env `POWERBI_POLICY_FILE`). Heuristic bảo thủ: chặn khi cột xuất hiện bất kỳ đâu trong DAX (tài liệu hóa rõ).
+- [x] Row cap dimension 200 (`POWERBI_DIMENSION_ROW_CAP`); thuần measure không siết.
+- [x] Audit log JSONL `~/.powerbi-agent/audit/YYYY-MM.jsonl` (ts·tool·verdict·rows·dax) — lỗi ghi audit không phá truy vấn.
+- [x] `list_tables` / `describe_table` (DMV; đã sửa bug `[ExplicitDataType]` + lọc `RowNumber-*` + TOM enum map — phát hiện qua UAT live).
+- [x] Token cache MSAL (app singleton).
 
-*Framing trung thực:* policy là guard chống rò rỉ **do sơ ý**, không phải bảo mật cứng —
-bảo mật cứng = RLS trên model + service principal quyền tối thiểu. Có cờ `--unsafe-allow-raw` cho người chủ đích.
+### M2 — Report layer (PBIR) + Template kit — ✅ XONG 2026-07-12
 
-### M2 — Report layer (PBIR) + Template kit
+- [x] `pbir.py`: resolve .pbip/.Report/definition · find_page (GUID/displayName) · projection/rebind (bỏ `sortDefinition` cũ) · set_title giữ style · GUID 20-hex · UTF-8 no-BOM · deep_sanitize (walk toàn cây: queryState + objects + conditional color + textbox text + filterConfig).
+- [x] `apply_template(report_path, kit_dir, page_spec)` — clone-and-rebind thành code; đăng ký pages.json; bỏ parentGroupName/expansionStates; cảnh báo file-đóng trong output.
+- [x] `distill_template(report_path, page, out_dir, sanitize)` — trang → kit (1 block giàu style nhất/loại + blueprint 100% visual + _page.json + kit.json).
+- [x] Kit format v1 = `kit.json` + `blueprint.md` + `blocks/*.json` + `_page.json` (JSON thay YAML — zero dep; preview.png để sau).
+- [x] Kit đầu tiên `templates/kpim-business-light` — distill từ trang chuẩn thật 30 visual, 12 loại block (card refLabel + conditional color, combo chart, pivot, slicer, map…), ĐÃ sanitize.
+- [x] `list_templates()` (repo templates/ + env `POWERBI_TEMPLATES_DIR`).
+- Dời sau: `read_report_structure` (blueprint của distill đã cover nhu cầu đọc), validate field-tồn-tại-trong-model trước khi bind (làm được qua describe_table thủ công trong pipeline).
 
-| Feature | Chi tiết |
-|---|---|
-| `read_report_structure(pbip_path)` | Đọc pages/visuals/bookmarks từ PBIR |
-| `add_report_page(pbip_path, kit, page_spec)` | Dựng trang mới bằng **clone-and-rebind**: copy block verbatim → thay đúng 4 thứ (name/position/queryState/visualType); giữ nguyên `visualContainerObjects` (style) |
-| Guard cứng trong code | File phải ĐÓNG mới ghi · UTF-8 no-BOM · validate field tồn tại trong model trước khi bind · đăng ký `pages.json` |
-| **Kit format v1** | `kit.yaml` (tokens) + `blueprint.md` (zone/visual/role→field) + `blocks/*.json` (verbatim mỗi loại visual) + `theme.json` + `preview.png` |
-| Kit đầu tiên | `kpim-business-light` (canvas 1280×720, palette + panel + card refLabel + conditional formatting) |
-| `list_templates()` | Liệt kê kit + preview cho người chọn |
+### M3 — Distill + Pipeline skill — ✅ XONG 2026-07-12
 
-### M3 — Distill + Pipeline skill
+- [x] `distill_model_schema` (đổi tên từ bản đóng góp, đích ghi `POWERBI_DISTILL_DIR`/`~/.powerbi-agent/distilled/`) — live PASS trên model 10 bảng/174 measure + Mermaid ERD.
+- [x] Skill **`pbi-pipeline`** 9 khâu (điều phối 2 MCP, cổng kiểm mỗi khâu, 4 artifact, bookmark-để-tay, hỏi PII đầu dự án) — cài cả 3 host, install.ps1 copy mọi skill.
+- [x] Vòng tri thức: distill_model_schema (model→blueprint) + distill_template (trang đẹp→kit) + bài học→memory.
 
-| Feature | Chi tiết |
-|---|---|
-| `distill_template(pbip_path, page, out_kit)` | Ngược của add_report_page: trang mẫu → kit (tách blocks verbatim + sinh blueprint.md) — nhân bản mẫu báo cáo thành tri thức tái dùng |
-| `distill_model_schema(port, model_id)` | Model schema → Markdown + Mermaid ERD (đích ghi cấu hình được — KHÔNG mặc định vào repo) |
-| Skill **`pbi-pipeline`** | Điều phối 9 khâu chuẩn: ①kết nối Power Query ②transform M (TMDL/PBIP-first) ③modeling+relationship (delegate MS) ④measure/calc column (delegate MS) ⑤DAX queries (policy-guarded) ⑥visual/matrix ⑦trang report ⑧nâng cao: page tooltip · drill-through · field parameters · what-if (bookmark: hướng dẫn thao tác tay) ⑨artifact: PLAN/CHANGESET/VERIFICATION/HANDOFF + doc phân tích per dự án |
-| Vòng tri thức | Cuối dự án: bài học HOW → memory của agent; tri thức nghiệp vụ WHAT → knowledge base người dùng chỉ định |
+**UAT (docs/UAT-REPORT.md):** 17 ca PASS trên dashboard thật (.pbip 7 trang + model 174 measure + Desktop live) — 4 defect tìm thấy & sửa trong UAT (deep-sanitize leak, sortDefinition leak, DMV ExplicitDataType, TOM enum map).
 
 ### M4 — Sản phẩm hóa
 

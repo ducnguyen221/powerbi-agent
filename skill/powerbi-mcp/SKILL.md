@@ -32,6 +32,22 @@ Khi kỹ năng này được kích hoạt thông qua cấu hình MCP Server, cá
 6. `add_relationship_local(port, model_id, from_table, from_column, to_table, to_column, is_active?)` — tạo relationship Many-to-One qua TOM (GHI model).
    - **Cả 5 & 6:** là fallback đơn lẻ. Thao tác modeling hàng loạt/phức tạp (bulk rename, transaction, TMDL, validate) → dùng MCP `powerbi-modeling` của Microsoft (xem Phân vai bên dưới). Sau khi GHI, nhắc user model đã đổi (Desktop thấy ngay, refresh visual nếu cần).
 
+7. `list_tables(port, model_id)` / `describe_table(port, model_id, table_name)` — khám phá schema (bảng, cột + kiểu, measure + expression) không cần thuộc DMV.
+
+8. **Template kit (report layer — PBIR, file .pbip ĐÓNG):**
+   - `list_templates()` — kit có sẵn (repo `templates/` + env `POWERBI_TEMPLATES_DIR`).
+   - `apply_template(report_path, kit_dir, page_spec)` — dựng TRANG MỚI từ kit theo luật clone-and-rebind (giữ style `visualContainerObjects`, chỉ đổi name/position/fields/visualType/title). KHÔNG BAO GIỜ tự dựng layout PBIR từ đầu.
+   - `distill_template(report_path, page, out_dir, sanitize?)` — chưng cất trang đẹp thành kit tái dùng; `sanitize=True` TRƯỚC khi chia sẻ/public (xóa tên bảng/cột nghiệp vụ).
+   - Quy trình dự án trọn gói 9 khâu: dùng skill **`pbi-pipeline`**.
+
+## Chính sách an toàn dữ liệu (server enforce — không phải chỉ lời nhắc)
+
+- `aggregate_only` **mặc định BẬT**: `EVALUATE 'Bảng'` / `EVALUATE ALL(...)` bị server TỪ CHỐI kèm hint viết lại (SUMMARIZECOLUMNS/TOPN/measure). Tắt khi user chủ đích: env `POWERBI_AGGREGATE_ONLY=0`.
+- **PII blocklist**: `policy.json` cạnh server (hoặc env `POWERBI_POLICY_FILE`) liệt kê cột cấm project. Đầu dự án dữ liệu nhạy cảm → hỏi user và ghi file này.
+- **Audit log**: mọi truy vấn ghi `~/.powerbi-agent/audit/*.jsonl` (verdict + số dòng) — dùng chứng minh "không dump dữ liệu thô".
+- Kết quả có cột dimension bị siết trần 200 dòng (thuần measure thì không).
+- Trung thực: đây là guard chống rò rỉ SƠ Ý — bảo mật cứng vẫn là RLS + service principal quyền tối thiểu.
+
 ---
 
 ## Nguyên tắc Kích hoạt & Luồng Xử lý của Agent

@@ -22,11 +22,12 @@ load_dotenv(os.path.join(_REPO_ROOT, ".env"))
 # Khởi tạo MCP Server với tên gọi định danh (giữ nguyên tên từ v0 — host đã đăng ký)
 mcp = FastMCP("PowerBI-Bridge-Server")
 
-from powerbi_agent import tools_distill, tools_query, tools_tom  # sau load_adomd()
+from powerbi_agent import tools_distill, tools_query, tools_template, tools_tom  # sau load_adomd()
 
 tools_query.register(mcp)
 tools_tom.register(mcp, TABULAR_LOADED)
 tools_distill.register(mcp)
+tools_template.register(mcp)
 
 
 def main():

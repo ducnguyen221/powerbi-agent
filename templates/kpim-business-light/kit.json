@@ -1,0 +1,115 @@
+{
+  "name": "kpim-business-light",
+  "schema": "powerbi-agent/kit/v1",
+  "created": "2026-07-12",
+  "sanitized": true,
+  "source": {
+    "report": "(sanitized)",
+    "page": "(sanitized)"
+  },
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "displayOption": "FitToPage"
+  },
+  "blocks": [
+    {
+      "file": "blocks/azureMap.json",
+      "visualType": "azureMap",
+      "roles": [
+        "Category",
+        "Tooltips"
+      ],
+      "source_visual": "51fd82603c8a3b95c09b"
+    },
+    {
+      "file": "blocks/bookmarkNavigator.json",
+      "visualType": "bookmarkNavigator",
+      "roles": [],
+      "source_visual": "85da696e4ab94bc05b09"
+    },
+    {
+      "file": "blocks/cardVisual.json",
+      "visualType": "cardVisual",
+      "roles": [
+        "Data"
+      ],
+      "source_visual": "dd93f8b8ec398e00d5bd"
+    },
+    {
+      "file": "blocks/clusteredBarChart.json",
+      "visualType": "clusteredBarChart",
+      "roles": [
+        "Category",
+        "Tooltips",
+        "Y"
+      ],
+      "source_visual": "554f987e0434ee326a40"
+    },
+    {
+      "file": "blocks/donutChart.json",
+      "visualType": "donutChart",
+      "roles": [
+        "Category",
+        "Y"
+      ],
+      "source_visual": "ba35f4a2cae34cda1d0c"
+    },
+    {
+      "file": "blocks/image.json",
+      "visualType": "image",
+      "roles": [],
+      "source_visual": "f54ad6fecb6b55ac3b57"
+    },
+    {
+      "file": "blocks/lineClusteredColumnComboChart.json",
+      "visualType": "lineClusteredColumnComboChart",
+      "roles": [
+        "Category",
+        "Y",
+        "Y2"
+      ],
+      "source_visual": "46abf6c188cb1599ac5b"
+    },
+    {
+      "file": "blocks/pivotTable.json",
+      "visualType": "pivotTable",
+      "roles": [
+        "Rows",
+        "Values"
+      ],
+      "source_visual": "f46055d440590b1057bd"
+    },
+    {
+      "file": "blocks/scatterChart.json",
+      "visualType": "scatterChart",
+      "roles": [
+        "Category",
+        "Size",
+        "X",
+        "Y"
+      ],
+      "source_visual": "66081cc153202c84ebb3"
+    },
+    {
+      "file": "blocks/shape.json",
+      "visualType": "shape",
+      "roles": [],
+      "source_visual": "f1924abe16020ed7620e"
+    },
+    {
+      "file": "blocks/slicer.json",
+      "visualType": "slicer",
+      "roles": [
+        "Values"
+      ],
+      "source_visual": "fd192c2e765a06ea7a26"
+    },
+    {
+      "file": "blocks/textbox.json",
+      "visualType": "textbox",
+      "roles": [],
+      "source_visual": "a636a4f18e8d0d20ee76"
+    }
+  ]
+}
