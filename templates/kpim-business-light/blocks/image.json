@@ -35,7 +35,7 @@
                 "name": {
                   "expr": {
                     "Literal": {
-                      "Value": "'demotelecom-logo.png'"
+                      "Value": "'TEMPLATE_IMAGE.png'"
                     }
                   }
                 },
@@ -44,7 +44,7 @@
                     "ResourcePackageItem": {
                       "PackageName": "RegisteredResources",
                       "PackageType": 1,
-                      "ItemName": "demotelecom-logo47855673769447393.png"
+                      "ItemName": "TEMPLATE_IMAGE.png"
                     }
                   }
                 },
