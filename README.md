@@ -7,7 +7,7 @@ từ truy vấn DAX có chính sách an toàn dữ liệu, đến dựng trang b
 Hỗ trợ **Power BI Desktop (local)** · **Power BI Service (cloud)** · **PBIP/PBIR (project files)**.
 Host: **Claude Code · Codex CLI · Google Antigravity** và mọi MCP client stdio.
 
-> 📘 Cài đặt chi tiết từng bước (có hình): mở **`INSTALL.html`** · Lộ trình: **[ROADMAP.md](ROADMAP.md)** · Kết quả UAT: **[docs/UAT-REPORT.md](docs/UAT-REPORT.md)**
+> 🌐 Website: **[ducnguyen.vn/powerbi-agent](https://ducnguyen.vn/powerbi-agent/)** · 📘 Cài đặt chi tiết: **`INSTALL.html`** · Lộ trình: **[ROADMAP.md](ROADMAP.md)** · Kết quả UAT: **[docs/UAT-REPORT.md](docs/UAT-REPORT.md)**
 
 ## Cài bằng AI Agent (khuyến nghị — 1 câu lệnh)
 
