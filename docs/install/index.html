@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cài đặt · powerbi-agent — 3 cách từ dễ đến thủ công</title>
+<meta name="description" content="Cài powerbi-agent: cách nhanh nhất là dán 1 câu cho AI tự cài; hoặc git clone + installer; hoặc chỉ cài skills dạng plugin. Kèm yêu cầu hệ thống, kiểm tra sau cài và xử lý sự cố.">
+<link rel="icon" href="../assets/logo-128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  .way{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:26px;margin:18px 0;position:relative}
+  .way.best{border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+  .way .badge{position:absolute;top:-11px;left:22px;background:var(--accent);color:#fff;
+    font-size:11.5px;font-weight:700;padding:3px 12px;border-radius:999px;letter-spacing:.03em}
+  .way h2{font-size:1.25rem;font-weight:800}
+  .way .for{margin-top:6px;font-size:13px;color:var(--faint)}
+</style>
+</head>
+<body>
+<canvas id="netbg" aria-hidden="true"></canvas>
+
+<header class="site" id="siteHeader">
+  <div class="wrap nav">
+    <a class="brand" href="../"><img src="../assets/logo-128.png" alt="powerbi-agent">powerbi-agent</a>
+    <nav class="nav-links">
+      <a href="../feature/">Tính năng</a>
+      <a href="../instruction/">Hướng dẫn</a>
+      <a href="../template/">Template</a>
+      <a href="./" class="active">Cài đặt</a>
+    </nav>
+    <a class="btn btn-ghost btn-sm gh" href="https://github.com/ducnguyen221/powerbi-agent" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.36-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+      <span>GitHub</span>
+    </a>
+  </div>
+</header>
+
+<nav class="quicknav" aria-label="Điều hướng nhanh">
+  <a href="#yeu-cau"><span class="qdot"></span><span class="qlabel">Yêu cầu</span></a>
+  <a href="#cach-1"><span class="qdot"></span><span class="qlabel">Cách 1 · Agent</span></a>
+  <a href="#cach-2"><span class="qdot"></span><span class="qlabel">Cách 2 · Thủ công</span></a>
+  <a href="#cach-3"><span class="qdot"></span><span class="qlabel">Cách 3 · Plugin</span></a>
+  <a href="#kiem-tra"><span class="qdot"></span><span class="qlabel">Kiểm tra</span></a>
+  <a href="#su-co"><span class="qdot"></span><span class="qlabel">Sự cố</span></a>
+</nav>
+
+<main>
+<section class="page-hero">
+  <div class="wrap">
+    <p class="crumb"><a href="../">Trang chủ</a> / Cài đặt</p>
+    <span class="eyebrow"><span class="dot"></span>Cài đặt</span>
+    <h1>Cài trong 5 phút —<br>AI tự làm phần khó.</h1>
+    <p class="lead">3 cách từ dễ đến thủ công. Với hầu hết mọi người: dùng <b>Cách 1</b> — dán một câu
+    cho AI của bạn, nó tự cài mọi thứ trên cả 3 nền tảng (Claude Code, Codex, Antigravity).</p>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <section id="yeu-cau" style="padding-top:0">
+    <div class="sec-head reveal"><span class="eyebrow"><span class="dot"></span>Trước khi cài</span><h2>Máy cần có gì</h2></div>
+    <div class="tbl-wrap reveal">
+      <table class="tbl">
+        <thead><tr><th>Thành phần</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">Windows 10/11</td><td>Power BI Desktop chỉ chạy trên Windows</td></tr>
+          <tr><td class="lbl">Power BI Desktop</td><td>Bản cài thường hoặc Microsoft Store đều được</td></tr>
+          <tr><td class="lbl">Python 3.11+</td><td>Kiểm tra: <code>python --version</code>. Chưa có → <a href="https://www.python.org/downloads/" style="color:var(--accent)">tải tại đây</a> (tick "Add to PATH")</td></tr>
+          <tr><td class="lbl">ADOMD.NET</td><td>Có sẵn nếu máy đã cài SSMS (bản 18–22). Chưa có → cài <a href="https://learn.microsoft.com/en-us/analysis-services/client-libraries" style="color:var(--accent)">Analysis Services client libraries</a>. Trình cài tự dò mọi vị trí.</td></tr>
+          <tr><td class="lbl">1 AI agent</td><td>Claude Code · Codex CLI · Google Antigravity (một trong ba, hoặc cả ba)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="cach-1" style="padding-top:8px">
+    <div class="way best reveal">
+      <span class="badge">KHUYẾN NGHỊ</span>
+      <h2>Cách 1 — Đưa cho chính AI cài</h2>
+      <p class="for">Dành cho: tất cả mọi người · thời gian: ~5 phút · không cần biết dòng lệnh</p>
+      <p style="margin-top:12px;color:var(--muted);line-height:1.65">Mở AI của bạn, dán nguyên câu này.
+      AI sẽ tải mã nguồn, đọc trình cài trước khi chạy, dựng môi trường, đăng ký vào cả 3 nền tảng
+      và tự học 4 skill + 6 lệnh:</p>
+      <div class="code-card">
+        <div class="code-top"><span class="fn">dán vào AI</span>
+          <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lbl">Sao chép</span></button></div>
+        <div class="code-scroll"><pre><code>Clone https://github.com/ducnguyen221/powerbi-agent
+vào ~/.mcp/powerbi-mcp rồi chạy install.ps1 trong đó
+(đọc script trước khi chạy), sau đó restart MCP host.</code></pre></div>
+      </div>
+      <p style="color:var(--muted);font-size:14px">Xong thì <b>khởi động lại AI</b> và gõ <code class="inline">/pbi-setup</code> — xem tiếp <a href="../instruction/" style="color:var(--accent);font-weight:600">Hướng dẫn</a>.</p>
+    </div>
+  </section>
+
+  <section id="cach-2" style="padding-top:0">
+    <div class="way reveal">
+      <h2>Cách 2 — Tự chạy lệnh (git + installer)</h2>
+      <p class="for">Dành cho: người quen dòng lệnh, muốn kiểm soát từng bước</p>
+      <div class="code-card">
+        <div class="code-top"><span class="fn">PowerShell</span>
+          <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lbl">Sao chép</span></button></div>
+        <div class="code-scroll"><pre><code><span class="cm"># 1. Lấy mã nguồn về đúng chỗ khuyến nghị</span>
+<span class="pr">git</span> clone https://github.com/ducnguyen221/powerbi-agent "$env:USERPROFILE\.mcp\powerbi-mcp"
+<span class="pr">cd</span> "$env:USERPROFILE\.mcp\powerbi-mcp"
+<span class="cm"># 2. Cài in-place: venv + dò ADOMD/TOM + đăng ký 3 host + skills + lệnh</span>
+<span class="pr">powershell</span> -ExecutionPolicy Bypass -File .\install.ps1
+<span class="cm"># 3. (khuyến nghị) cài kèm modeling chính chủ Microsoft</span>
+<span class="pr">claude</span> mcp add powerbi-modeling -s user -- npx -y "@microsoft/powerbi-modeling-mcp@latest" --start</code></pre></div>
+      </div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6">Trình cài idempotent (chạy lại an toàn),
+      backup config trước khi sửa, không đụng file bí mật. Tham số: <code class="inline">-Hosts claude,codex,antigravity</code>
+      chọn nền tảng · <code class="inline">-SkipVenv</code> chỉ cập nhật đăng ký. Bản hướng dẫn chi tiết từng
+      bước + ảnh: <a href="../INSTALL.html" style="color:var(--accent);font-weight:600">INSTALL.html</a>.</p>
+    </div>
+  </section>
+
+  <section id="cach-3" style="padding-top:0">
+    <div class="way reveal">
+      <h2>Cách 3 — Chỉ cài skills (dạng plugin, không cần Python)</h2>
+      <p class="for">Dành cho: người chỉ cần quy trình &amp; kiến thức (chưa cần AI thao tác trực tiếp lên Power BI)</p>
+      <div class="code-card">
+        <div class="code-top"><span class="fn">Claude Code / Codex</span>
+          <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="lbl">Sao chép</span></button></div>
+        <div class="code-scroll"><pre><code>claude plugin marketplace add ducnguyen221/powerbi-agent
+claude plugin install powerbi-agent@powerbi-agent</code></pre></div>
+      </div>
+      <p style="color:var(--muted);font-size:14px">Muốn đủ 16 công cụ (truy vấn, dựng báo cáo…) → quay lại Cách 1/2.</p>
+    </div>
+  </section>
+
+  <section id="kiem-tra" style="padding-top:8px">
+    <div class="sec-head reveal"><span class="eyebrow"><span class="dot"></span>Sau khi cài</span><h2>Kiểm tra 30 giây</h2></div>
+    <div class="reveal">
+      <div class="step"><span class="num">1</span><div class="body"><h3>Khởi động lại AI</h3><p>Đóng mở lại Claude Code / Codex / Antigravity để nhận công cụ mới.</p></div></div>
+      <div class="step"><span class="num">2</span><div class="body"><h3>Kiểm tra kết nối</h3>
+        <p>Claude Code: chạy <code class="inline">claude mcp list</code> — phải thấy
+        <code class="inline">powerbi-mcp-bridge ✔ Connected</code>.</p></div></div>
+      <div class="step"><span class="num">3</span><div class="body"><h3>Thử lệnh đầu tiên</h3>
+        <p>Mở 1 file .pbix bất kỳ trong Power BI Desktop rồi hỏi AI: <i>"Liệt kê các báo cáo Power BI
+        đang mở và cho xem danh sách bảng của model."</i> AI trả về danh sách bảng = cài thành công 🎉</p></div></div>
+      <div class="step"><span class="num">4</span><div class="body"><h3>Thiết lập bộ nhớ tri thức</h3>
+        <p>Gõ <code class="inline">/pbi-setup</code> — chỉ định thư mục lưu tri thức dự án (1 lần).
+        Chi tiết: <a href="../instruction/" style="color:var(--accent);font-weight:600">Hướng dẫn</a>.</p></div></div>
+    </div>
+  </section>
+
+  <section id="su-co" style="padding-top:8px">
+    <div class="sec-head reveal"><span class="eyebrow"><span class="dot"></span>Khi có vấn đề</span><h2>Sự cố thường gặp</h2></div>
+    <div class="tbl-wrap reveal">
+      <table class="tbl">
+        <thead><tr><th>Triệu chứng</th><th>Cách xử lý</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">Công cụ không xuất hiện</td><td>Khởi động lại AI; kiểm tra <code>claude mcp list</code></td></tr>
+          <tr><td class="lbl">Báo thiếu ADOMD.NET</td><td>Cài SSMS hoặc Analysis Services client libraries; hoặc đặt biến môi trường <code>ADOMD_LIB_DIR</code> trỏ tới thư mục chứa DLL</td></tr>
+          <tr><td class="lbl">Không tìm thấy báo cáo đang mở</td><td>Power BI Desktop phải ĐANG mở 1 file; chờ vài giây cho engine khởi động</td></tr>
+          <tr><td class="lbl">Truy vấn bị chặn "aggregate-only"</td><td>Là chủ đích (bảo vệ dữ liệu chi tiết). AI sẽ tự viết lại dạng tổng hợp; thực sự cần dữ liệu thô → đặt <code>POWERBI_AGGREGATE_ONLY=0</code></td></tr>
+          <tr><td class="lbl">Trang báo cáo AI tạo không thấy</td><td>File .pbip phải ĐÓNG khi AI ghi; nếu đang mở → Đóng KHÔNG lưu rồi mở lại</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="reveal" style="margin-top:16px;color:var(--muted);font-size:14px">Không tự xử được? Mở
+    <a href="https://github.com/ducnguyen221/powerbi-agent/issues" style="color:var(--accent);font-weight:600">GitHub Issues</a>
+    — kèm thông báo lỗi và bước tái hiện.</p>
+  </section>
+
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap foot">
+    <a class="brand" href="../"><img src="../assets/logo-128.png" alt="powerbi-agent" width="26" height="26">powerbi-agent</a>
+    <div class="foot-links">
+      <a href="../feature/">Tính năng</a><a href="../instruction/">Hướng dẫn</a>
+      <a href="../template/">Template</a><a href="./">Cài đặt</a>
+      <a href="https://github.com/ducnguyen221/powerbi-agent" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <span class="foot-copy">© 2026 Duc Nguyen · MIT</span>
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#2f6df6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0e0f13" media="(prefers-color-scheme: dark)">
 <meta property="og:title" content="powerbi-agent · AI Agent × Power BI, data-safe by default">
-<meta property="og:description" content="MCP server 11 tool: DAX query qua policy aggregate-only, template kit báo cáo clone-and-rebind, pipeline phân tích 9 khâu. Mã nguồn mở, chạy trên máy bạn.">
+<meta property="og:description" content="16 công cụ + quy trình phân tích KPIM + Knowledge OS học theo từng dự án. AI làm Power BI trọn vòng, dữ liệu chi tiết không rời máy bạn. Mã nguồn mở.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ducnguyen.vn/powerbi-agent/">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='12' width='4' height='9' rx='1' fill='%23f2c811'/%3E%3Crect x='10' y='7' width='4' height='14' rx='1' fill='%232f6df6'/%3E%3Crect x='17' y='3' width='4' height='18' rx='1' fill='%235b8cff'/%3E%3C/svg%3E">
+<link rel="icon" href="assets/logo-128.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -274,6 +274,19 @@
     display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--faint);font-size:13px}
   .foot-bottom .lic{font-family:var(--mono)}
 
+
+  /* quick-nav dọc phải */
+  .quicknav{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:40;
+    display:flex;flex-direction:column;gap:6px;background:color-mix(in srgb,var(--surface) 80%,transparent);
+    backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:14px;padding:10px 8px;box-shadow:var(--shadow-md)}
+  .quicknav a{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--faint);
+    padding:5px 8px;border-radius:8px;transition:color .15s,background .15s}
+  .quicknav a .qdot{width:7px;height:7px;border-radius:50%;background:var(--border-strong);flex:none;transition:background .15s}
+  .quicknav a:hover{color:var(--text);background:var(--surface-2)}
+  .quicknav a.on{color:var(--accent)}
+  .quicknav a.on .qdot{background:var(--accent)}
+  @media (max-width:1240px){.quicknav .qlabel{display:none}.quicknav{padding:10px 6px}}
+  @media (max-width:760px){.quicknav{display:none}}
   @media (prefers-reduced-motion:no-preference){
     .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
     .reveal.in{opacity:1;transform:none}
@@ -287,14 +300,14 @@
 <header class="site" id="siteHeader">
   <div class="wrap nav">
     <a class="brand" href="#top">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="12" width="4" height="9" rx="1" fill="var(--gold)"/><rect x="10" y="7" width="4" height="14" rx="1" fill="var(--accent)"/><rect x="17" y="3" width="4" height="18" rx="1" fill="var(--accent-ink)"/></svg>
+      <img src="assets/logo-128.png" alt="powerbi-agent" style="width:32px;height:32px;border-radius:50%">
       powerbi-agent
     </a>
     <nav class="nav-links">
-      <a href="#tinh-nang">Tính năng</a>
-      <a href="#cach-hoat-dong">Cách hoạt động</a>
-      <a href="#manh-yeu">Mạnh &amp; giới hạn</a>
-      <a href="#cai-dat">Cài đặt</a>
+      <a href="feature/">Tính năng</a>
+      <a href="instruction/">Hướng dẫn</a>
+      <a href="template/">Template</a>
+      <a href="install/">Cài đặt</a>
     </nav>
     <a class="btn btn-ghost btn-sm gh" href="https://github.com/ducnguyen221/powerbi-agent" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.36-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
@@ -302,6 +315,13 @@
     </a>
   </div>
 </header>
+
+<nav class="quicknav" aria-label="Điều hướng nhanh trong trang">
+  <a href="#tinh-nang"><span class="qdot"></span><span class="qlabel">Tính năng</span></a>
+  <a href="#cach-hoat-dong"><span class="qdot"></span><span class="qlabel">Cách hoạt động</span></a>
+  <a href="#manh-yeu"><span class="qdot"></span><span class="qlabel">Mạnh & giới hạn</span></a>
+  <a href="#cai-dat"><span class="qdot"></span><span class="qlabel">Cài đặt</span></a>
+</nav>
 
 <main id="top">
 
@@ -314,7 +334,7 @@
         Mã nguồn mở &nbsp;·&nbsp; <b>An toàn dữ liệu enforce ở server</b>
       </span>
       <h1>Biến AI Agent thành<br><span class="hl">chuyên gia Power BI</span>, ngay trên máy bạn.</h1>
-      <p class="lead">MCP server 11 tool + <b>quy trình phân tích KPIM</b>: agent truy vấn DAX, khám phá model, viết measure, dựng trang báo cáo đẹp theo template, và tài liệu hóa–chuẩn hóa dữ liệu theo mẫu — dữ liệu thô ở lại trong engine.</p>
+      <p class="lead">Nói việc cần làm bằng ngôn ngữ tự nhiên — AI khảo sát theo <b>quy trình phân tích KPIM</b>, dựng mô hình, viết công thức, tạo trang báo cáo đẹp theo template, và <b>học từ mỗi dự án</b>. Dữ liệu chi tiết không rời Power BI.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#cai-dat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
@@ -408,9 +428,9 @@
       </div>
       <div class="feat reveal">
         <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
-        <h3>Chưng cất tri thức</h3>
-        <p>Model → blueprint Markdown + sơ đồ Mermaid ERD + từ điển 174 measure — agent "thuộc bài" model của bạn cho mọi phiên sau.</p>
-        <span class="kbd">distill_model_schema</span>
+        <h3>Knowledge OS — AI giỏi dần <span style="font-size:11px;font-weight:700;color:var(--gold);vertical-align:top">MỚI</span></h3>
+        <p>Mỗi dự án khép lại, AI tự rút bài học vào "bộ nhớ" riêng của bạn (ngoài repo) — dự án sau nó đọc kinh nghiệm cũ trước khi bắt tay. 6 lệnh: /pbi-setup · new · scan · done · pack · recall.</p>
+        <span class="kbd">knowledge_status · distill_report_design</span>
       </div>
       <div class="feat reveal">
         <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></div>
@@ -516,7 +536,7 @@
     <div class="install-copy reveal">
       <span class="eyebrow"><span class="dot"></span>Cài đặt</span>
       <h2 style="margin-top:14px">Nhanh nhất: đưa cho chính agent cài</h2>
-      <p>Dán 1 câu vào Claude Code / Codex / Antigravity — agent clone, dựng môi trường, đăng ký MCP vào cả 3 host và tự học <b>3 skill</b> đi kèm (powerbi-mcp, pbi-pipeline, kpim-analysis) cùng bộ references DAX/M/SQL &amp; mẫu tài liệu hóa. Hoặc chạy tay 3 dòng bên cạnh.</p>
+      <p>Dán 1 câu vào Claude Code / Codex / Antigravity — agent clone, dựng môi trường, đăng ký MCP vào cả 3 host và tự học <b>4 skill + 6 lệnh /pbi-*</b> đi kèm, cùng bộ references DAX/M/SQL &amp; mẫu tài liệu hóa. Hoặc chạy tay 3 dòng bên cạnh.</p>
       <div class="req">
         <ul>
           <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span><b>Windows 10/11</b> + Power BI Desktop (bản cài hoặc Store)</span></li>
@@ -587,7 +607,7 @@ vào ~/.mcp/powerbi-mcp rồi chạy install.ps1 trong đó
     <div class="foot">
       <div>
         <a class="brand" href="#top">
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="26" height="26"><rect x="3" y="12" width="4" height="9" rx="1" fill="var(--gold)"/><rect x="10" y="7" width="4" height="14" rx="1" fill="var(--accent)"/><rect x="17" y="3" width="4" height="18" rx="1" fill="var(--accent-ink)"/></svg>
+          <img src="assets/logo-128.png" alt="powerbi-agent" width="26" height="26" style="border-radius:50%">
           powerbi-agent
         </a>
         <p class="foot-tag">MCP server + skills + quy trình phân tích KPIM &amp; mẫu tài liệu hóa cho AI Agent làm phân tích dữ liệu end-to-end trên Power BI, an toàn dữ liệu mặc định.</p>
@@ -595,10 +615,10 @@ vào ~/.mcp/powerbi-mcp rồi chạy install.ps1 trong đó
       <div class="foot-links">
         <div class="foot-col">
           <b>Sản phẩm</b>
-          <a href="#tinh-nang">Tính năng</a>
-          <a href="#cach-hoat-dong">Cách hoạt động</a>
-          <a href="#manh-yeu">Mạnh &amp; giới hạn</a>
-          <a href="#cai-dat">Cài đặt</a>
+          <a href="feature/">Tính năng</a>
+          <a href="instruction/">Hướng dẫn</a>
+          <a href="template/">Template</a>
+          <a href="install/">Cài đặt</a>
         </div>
         <div class="foot-col">
           <b>Tài nguyên</b>
@@ -656,6 +676,24 @@ vào ~/.mcp/powerbi-mcp rồi chạy install.ps1 trong đó
       'powershell -ExecutionPolicy Bypass -File .\\install.ps1',
       'claude mcp add powerbi-modeling -s user -- npx -y "@microsoft/powerbi-modeling-mcp@latest" --start'
     ].join('\n'));
+  })();
+
+
+  // quick-nav highlight
+  (function(){
+    var qn=document.querySelectorAll('.quicknav a[href^="#"]');
+    if(!qn.length||!('IntersectionObserver' in window))return;
+    var map={};
+    qn.forEach(function(a){var id=a.getAttribute('href').slice(1);var el=document.getElementById(id);if(el)map[id]=a;});
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if(en.isIntersecting){
+          qn.forEach(function(a){a.classList.remove('on')});
+          var a=map[en.target.id];if(a)a.classList.add('on');
+        }
+      });
+    },{rootMargin:'-40% 0px -55% 0px'});
+    Object.keys(map).forEach(function(id){io.observe(document.getElementById(id))});
   })();
 
   // scroll reveal

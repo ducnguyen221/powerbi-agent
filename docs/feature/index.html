@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tính năng · powerbi-agent — AI Agent làm Power BI trọn vòng</title>
+<meta name="description" content="Các module của powerbi-agent: an toàn dữ liệu enforce ở server, template báo cáo đẹp tái tạo được, Knowledge OS học theo từng dự án, quy trình phân tích chuẩn KPIM, 16 công cụ cho AI Agent.">
+<link rel="icon" href="../assets/logo-128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  .mod{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:44px 0;border-bottom:1px solid var(--border)}
+  .mod:last-of-type{border-bottom:none}
+  .mod.flip .mod-copy{order:2}
+  .mod h2{font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;margin-top:12px}
+  .mod .easy{margin-top:12px;font-size:1.04rem;line-height:1.65;color:var(--text)}
+  .mod .deep{margin-top:14px;padding:14px 18px;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:var(--radius-sm);font-size:14px;color:var(--muted);line-height:1.65}
+  .mod .deep b{color:var(--text)}
+  .mod-visual{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow-md);padding:22px;font-size:13.5px}
+  .mod-visual .mono{font-family:var(--mono);font-size:12.5px}
+  @media (max-width:860px){.mod{grid-template-columns:1fr}.mod.flip .mod-copy{order:0}}
+  .chat-line{display:flex;gap:9px;margin:8px 0;align-items:flex-start}
+  .chat-line .who{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;margin-top:2px}
+  .who.u{background:var(--accent-weak);color:var(--accent-ink)}
+  .who.a{background:var(--surface-3);color:var(--muted)}
+  .who.p{background:var(--danger-weak);color:var(--danger)}
+  .swatch{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:-3px;margin-right:2px;border:1px solid var(--border)}
+  .flow-mini{display:flex;flex-direction:column;gap:8px}
+  .flow-mini .fstep{display:flex;gap:10px;align-items:center;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:8px 12px}
+  .flow-mini .fstep b{font-size:13px}
+  .flow-mini .arr{text-align:center;color:var(--faint);font-size:12px;line-height:.6}
+</style>
+</head>
+<body>
+<canvas id="netbg" aria-hidden="true"></canvas>
+
+<header class="site" id="siteHeader">
+  <div class="wrap nav">
+    <a class="brand" href="../"><img src="../assets/logo-128.png" alt="powerbi-agent">powerbi-agent</a>
+    <nav class="nav-links">
+      <a href="./" class="active">Tính năng</a>
+      <a href="../instruction/">Hướng dẫn</a>
+      <a href="../template/">Template</a>
+      <a href="../install/">Cài đặt</a>
+    </nav>
+    <a class="btn btn-ghost btn-sm gh" href="https://github.com/ducnguyen221/powerbi-agent" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.36-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+      <span>GitHub</span>
+    </a>
+  </div>
+</header>
+
+<nav class="quicknav" aria-label="Điều hướng nhanh">
+  <a href="#an-toan"><span class="qdot"></span><span class="qlabel">An toàn dữ liệu</span></a>
+  <a href="#template"><span class="qdot"></span><span class="qlabel">Template</span></a>
+  <a href="#knowledge"><span class="qdot"></span><span class="qlabel">Knowledge OS</span></a>
+  <a href="#quy-trinh"><span class="qdot"></span><span class="qlabel">Quy trình</span></a>
+  <a href="#tools"><span class="qdot"></span><span class="qlabel">16 công cụ</span></a>
+  <a href="#microsoft"><span class="qdot"></span><span class="qlabel">Song hành MS</span></a>
+</nav>
+
+<main>
+<section class="page-hero">
+  <div class="wrap">
+    <p class="crumb"><a href="../">Trang chủ</a> / Tính năng</p>
+    <span class="eyebrow"><span class="dot"></span>Tính năng</span>
+    <h1>Mọi thứ để AI làm Power BI<br>cho bạn — đúng chuẩn, an toàn.</h1>
+    <p class="lead">powerbi-agent gồm 6 module phối hợp: từ bảo vệ dữ liệu, dựng báo cáo đẹp,
+    đến bộ nhớ dự án giúp AI giỏi dần theo thời gian. Mỗi phần dưới đây có giải thích ngắn cho
+    người mới và chi tiết kỹ thuật cho chuyên gia.</p>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- MODULE 1: AN TOÀN DỮ LIỆU -->
+  <div class="mod reveal" id="an-toan">
+    <div class="mod-copy">
+      <div class="ficon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h2>An toàn dữ liệu — chặn ở tầng máy chủ</h2>
+      <p class="easy">AI chỉ nhận được <b>số liệu đã tổng hợp</b> (tổng, trung bình, tỷ lệ…) —
+      dữ liệu chi tiết từng dòng, từng khách hàng <b>ở lại trong Power BI</b>. Kể cả khi AI "quên",
+      hệ thống vẫn tự chặn và ghi lại bằng chứng.</p>
+      <div class="aud"><span class="a1">Vì sao đáng tin</span></div>
+      <div class="deep">Chính sách <b>aggregate-only</b> enforce trong code server (không phải lời nhắc
+      trong prompt): chặn <code class="inline">EVALUATE '&lt;bảng&gt;'</code> / <code class="inline">ALL()</code>,
+      hướng dẫn viết lại bằng SUMMARIZECOLUMNS/TOPN/measure. Kèm <b>PII blocklist</b> theo dự án
+      (policy.json), <b>audit log JSONL</b> từng truy vấn, trần 200 dòng cho kết quả dimension.
+      Trung thực: đây là guard chống rò rỉ sơ ý — bảo mật cứng vẫn là RLS + service principal tối thiểu.</div>
+    </div>
+    <div class="mod-visual" aria-hidden="true">
+      <div class="chat-line"><span class="who u">BẠN</span><span>Cho xem nguyên bảng khách hàng.</span></div>
+      <div class="chat-line"><span class="who p">🛡️ POLICY</span><span style="color:var(--danger);font-weight:600">Đã chặn — dữ liệu thô ở lại trong engine.</span></div>
+      <div class="chat-line"><span class="who a">AGENT</span><span>Thay vào đó, đây là tổng hợp theo phân khúc: KHCN 3.438 · KHDN 538 · VIP 225.</span></div>
+      <p class="mono" style="margin-top:12px;color:var(--faint)">audit.jsonl → {"verdict":"blocked_raw_dump"} · {"verdict":"allowed","rows":3}</p>
+    </div>
+  </div>
+
+  <!-- MODULE 2: TEMPLATE -->
+  <div class="mod flip reveal" id="template">
+    <div class="mod-copy">
+      <div class="ficon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <h2>Báo cáo đẹp — tái tạo từ template đã chứng minh</h2>
+      <p class="easy">Trang báo cáo bạn ưng ý được "đóng khuôn" thành template. Dự án sau, AI dựng lại
+      <b>đúng chuẩn thiết kế đó</b> trên dữ liệu mới — màu sắc, bố cục, thẻ KPI giữ nguyên 100%.</p>
+      <div class="aud"><span class="a2">Kỹ thuật bên dưới</span></div>
+      <div class="deep">Bài học đắt giá: layout AI tự dựng từ đầu luôn xấu — <b>clone-and-rebind</b> mới đẹp.
+      <code class="inline">distill_template</code> tách trang thành kit (blocks visual.json verbatim + blueprint);
+      <code class="inline">apply_template</code> dựng trang mới: giữ nguyên <code class="inline">visualContainerObjects</code>
+      (style), chỉ đổi binding field. Kit chứa nghiệp vụ thật ở lại máy bạn; chia sẻ công khai thì
+      <code class="inline">sanitize=True</code> tự xóa mọi tên bảng/cột. Xem <a href="../template/" style="color:var(--accent)">kho template</a>.</div>
+    </div>
+    <div class="mod-visual" aria-hidden="true">
+      <div class="flow-mini">
+        <div class="fstep"><span>🎨</span><b>Trang báo cáo đẹp (đã duyệt)</b></div>
+        <div class="arr">▼ distill_template</div>
+        <div class="fstep"><span>📦</span><b>Kit: blocks + blueprint + theme</b><span class="mono" style="color:var(--faint)">12 block</span></div>
+        <div class="arr">▼ apply_template (dữ liệu mới)</div>
+        <div class="fstep"><span>✨</span><b>Trang mới — style giữ nguyên 100%</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 3: KNOWLEDGE OS -->
+  <div class="mod reveal" id="knowledge">
+    <div class="mod-copy">
+      <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
+      <h2>Knowledge OS — AI giỏi dần theo từng dự án <span class="kbd" style="vertical-align:middle">MỚI v0.3</span></h2>
+      <p class="easy">Mỗi dự án khép lại, AI tự <b>rút bài học và cất vào "bộ nhớ" của riêng bạn</b> —
+      một thư mục do bạn chỉ định, nằm ngoài phần mềm. Dự án sau, AI đọc kinh nghiệm cũ trước khi
+      bắt tay: hiểu ngành của bạn, nhớ cách bạn thích trình bày, tra lại được "đã từng làm gì tương tự".</p>
+      <div class="aud"><span class="a1">Riêng tư mặc định</span><span class="a2">Cơ chế</span></div>
+      <div class="deep">Knowledge Dir do user chỉ định (config gitignored — không ai nhận tri thức của ai
+      qua git): <code class="inline">projects/&lt;dự án&gt;/</code> lưu tài liệu + hồ sơ thiết kế ·
+      <code class="inline">knowledge/</code> bài học đóng gói theo <b>4 trục</b> (tech-stack, industry,
+      business-domain, powerbi) chuẩn Why/How-to-apply, dedup · <code class="inline">TIMELINE.md</code>
+      append-only. Agent <b>pbi-knowledge-curator</b> lo việc đóng gói. 6 lệnh:
+      /pbi-setup · new · scan · done · pack · recall — xem <a href="../instruction/" style="color:var(--accent)">Hướng dẫn</a>.</div>
+    </div>
+    <div class="mod-visual" aria-hidden="true">
+      <p class="mono" style="color:var(--faint);margin-bottom:8px">📁 Knowledge Dir (của BẠN, ngoài repo)</p>
+      <div class="mono" style="line-height:1.9">
+        ├─ projects/bao-cao-doanh-thu/<br>
+        │&nbsp;&nbsp;&nbsp;├─ PROJECT.md · DATA_DICTIONARY.md…<br>
+        │&nbsp;&nbsp;&nbsp;└─ design/ (theme + catalog)<br>
+        ├─ knowledge/ <span style="color:var(--faint)">← bài học 4 trục</span><br>
+        ├─ templates/ <span style="color:var(--faint)">← kit riêng</span><br>
+        └─ TIMELINE.md <span style="color:var(--faint)">← dòng thời gian</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 4: QUY TRÌNH -->
+  <div class="mod flip reveal" id="quy-trinh">
+    <div class="mod-copy">
+      <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg></div>
+      <h2>Quy trình phân tích chuẩn KPIM — không làm ẩu</h2>
+      <p class="easy">AI không "phóng bút" làm báo cáo ngay. Nó đi đúng trình tự của một chuyên viên
+      phân tích giỏi: <b>hiểu bài toán → hỏi lại cho rõ → tài liệu hóa → lập kế hoạch → mới bắt tay dựng</b>.
+      Mỗi bước có kiểm tra trước khi sang bước sau.</p>
+      <div class="aud"><span class="a2">2 lớp quy trình</span></div>
+      <div class="deep"><b>kpim-analysis</b> (nghiệp vụ): Research → Key Information (5 mindmap +
+      DATA_DICTIONARY, METRICS_CALCULATION, DOMAIN_DIMENSION, REPORTS, DESIGN) → Planning (Excel 2 cấp)
+      → bàn giao. <b>pbi-pipeline</b> (kỹ thuật, 9 khâu): Power Query → transform M → star schema →
+      DAX (verify từng measure) → truy vấn qua policy → trang báo cáo từ template → tính năng nâng cao
+      → artifact bàn giao. Kèm tài liệu DAX/M/SQL best-practices từ Microsoft Learn.</div>
+    </div>
+    <div class="mod-visual" aria-hidden="true">
+      <div class="flow-mini">
+        <div class="fstep"><span>1️⃣</span><b>kpim-analysis</b><span style="color:var(--faint);font-size:12px">— khảo sát · tài liệu · kế hoạch</span></div>
+        <div class="arr">▼</div>
+        <div class="fstep"><span>2️⃣</span><b>pbi-pipeline (9 khâu)</b><span style="color:var(--faint);font-size:12px">— model · DAX · báo cáo</span></div>
+        <div class="arr">▼</div>
+        <div class="fstep"><span>3️⃣</span><b>Đóng gói tri thức</b><span style="color:var(--faint);font-size:12px">— bài học cho dự án sau</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 5: 16 TOOLS -->
+  <section id="tools" class="reveal" style="padding:44px 0;border-bottom:1px solid var(--border)">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="dot"></span>Bộ công cụ</span>
+      <h2>16 công cụ AI gọi trực tiếp</h2>
+      <p>Đây là "đôi tay" của AI trên Power BI — chia 6 nhóm. Người dùng không cần nhớ tên công cụ:
+      cứ nói việc cần làm, AI tự chọn đúng công cụ.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Nhóm</th><th>Công cụ</th><th>Việc nó làm</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl" rowspan="3">Khám phá</td><td><code>list_local_reports</code></td><td>Tìm báo cáo đang mở trên máy</td></tr>
+          <tr><td><code>list_tables</code></td><td>Liệt kê các bảng dữ liệu trong mô hình</td></tr>
+          <tr><td><code>describe_table</code></td><td>Soi 1 bảng: cột, kiểu dữ liệu, công thức đo lường</td></tr>
+          <tr><td class="lbl" rowspan="2">Truy vấn 🛡️</td><td><code>execute_dax_local</code></td><td>Hỏi số liệu từ file đang mở — qua lớp an toàn dữ liệu</td></tr>
+          <tr><td><code>execute_dax_service</code></td><td>Hỏi số liệu từ báo cáo đã xuất bản lên cloud</td></tr>
+          <tr><td class="lbl" rowspan="2">Xây mô hình</td><td><code>add_measure_local</code></td><td>Viết công thức đo lường (measure) vào mô hình</td></tr>
+          <tr><td><code>add_relationship_local</code></td><td>Nối quan hệ giữa các bảng</td></tr>
+          <tr><td class="lbl" rowspan="3">Template 🎨</td><td><code>list_templates</code></td><td>Xem kho template có sẵn</td></tr>
+          <tr><td><code>apply_template</code></td><td>Dựng trang báo cáo mới từ template — đẹp ngay lần đầu</td></tr>
+          <tr><td><code>distill_template</code></td><td>Đóng khuôn trang đẹp thành template tái dùng</td></tr>
+          <tr><td class="lbl" rowspan="2">Hồ sơ thiết kế</td><td><code>distill_model_schema</code></td><td>Chụp "bản đồ" mô hình dữ liệu (kèm sơ đồ quan hệ)</td></tr>
+          <tr><td><code>distill_report_design</code></td><td>Quét trọn báo cáo: mọi trang + theme + danh mục visual</td></tr>
+          <tr><td class="lbl" rowspan="4">Knowledge OS 🧠</td><td><code>knowledge_status</code></td><td>Kiểm tra bộ nhớ tri thức đã sẵn sàng chưa</td></tr>
+          <tr><td><code>setup_knowledge</code></td><td>Chỉ định thư mục lưu tri thức (1 lần)</td></tr>
+          <tr><td><code>init_project</code></td><td>Mở hồ sơ dự án mới</td></tr>
+          <tr><td><code>log_timeline</code></td><td>Ghi nhật ký dự án & bài học</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MODULE 6: MICROSOFT + MULTI-AGENT -->
+  <div class="mod reveal" id="microsoft" style="border-bottom:none">
+    <div class="mod-copy">
+      <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <h2>Song hành cùng Microsoft — và làm việc theo tổ</h2>
+      <p class="easy">powerbi-agent không "làm lại" những gì Microsoft đã làm tốt — nó chạy cạnh công cụ
+      chính chủ của Microsoft và <b>đảm nhận phần Microsoft không làm</b>: trang báo cáo, an toàn dữ liệu,
+      quy trình và bộ nhớ tri thức. Nhiều AI (Claude, Codex, Antigravity) có thể cùng làm 1 dự án
+      theo phân vai rõ ràng.</p>
+      <div class="aud"><span class="a2">Phân vai</span></div>
+      <div class="deep">Modeling hàng loạt/TMDL/validate DAX → <b>microsoft/powerbi-modeling-mcp</b> (official).
+      Query + policy + report layer + knowledge → <b>powerbi-agent</b>. Đa-agent: luật single-writer,
+      lock file <code class="inline">.pbi-write-lock</code>, vai Builder/Reviewer/Documenter, artifact
+      bàn giao chung — định nghĩa trong <a href="https://github.com/ducnguyen221/powerbi-agent/blob/main/AGENTS.md" style="color:var(--accent)">AGENTS.md</a>.</div>
+    </div>
+    <div class="mod-visual" aria-hidden="true">
+      <div class="flow-mini">
+        <div class="fstep"><span>🔵</span><b>Claude — Builder</b><span style="color:var(--faint);font-size:12px">dựng model & báo cáo</span></div>
+        <div class="fstep"><span>🟢</span><b>Codex — Reviewer</b><span style="color:var(--faint);font-size:12px">kiểm số liệu, chỉ đọc</span></div>
+        <div class="fstep"><span>🟡</span><b>Antigravity — Documenter</b><span style="color:var(--faint);font-size:12px">tài liệu & spec</span></div>
+        <div class="arr">▼ cùng 1 dự án · không giẫm chân</div>
+        <div class="fstep"><span>📊</span><b>Power BI</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:48px 0 20px">
+    <a class="btn btn-primary" href="../install/">Cài đặt ngay</a>
+    <a class="btn btn-ghost" href="../instruction/" style="margin-left:10px">Xem hướng dẫn dùng</a>
+  </div>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap foot">
+    <a class="brand" href="../"><img src="../assets/logo-128.png" alt="powerbi-agent" width="26" height="26">powerbi-agent</a>
+    <div class="foot-links">
+      <a href="../feature/">Tính năng</a><a href="../instruction/">Hướng dẫn</a>
+      <a href="../template/">Template</a><a href="../install/">Cài đặt</a>
+      <a href="https://github.com/ducnguyen221/powerbi-agent" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <span class="foot-copy">© 2026 Duc Nguyen · MIT</span>
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>
