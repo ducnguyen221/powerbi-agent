@@ -16,7 +16,8 @@ plugins/powerbi-agent/skills/   # 3 skill dùng chung mọi host (nguồn DUY NH
   kpim-analysis/                #   pha NGHIỆP VỤ: khảo sát → tài liệu hóa → kế hoạch (+templates/ +scripts/)
   pbi-pipeline/                 #   pha KỸ THUẬT: 9 khâu Power Query → model → DAX → report (+references/)
   powerbi-mcp/                  #   hướng dẫn dùng 11 tool + luật an toàn dữ liệu
-.claude-plugin/marketplace.json # cài skills dạng plugin (Claude/Codex)
+.claude-plugin/marketplace.json # DANH MỤC chợ plugin (≠ plugin.json trong plugins/powerbi-agent/
+                                #   = manifest của plugin — 2 tầng chuẩn Claude, không trùng lặp)
 hosts/{claude,codex,antigravity}/  # hướng dẫn đăng ký RIÊNG từng host
 templates/                      # template kit VISUAL báo cáo cho apply_template (≠ templates tài liệu trong kpim-analysis)
 scripts/                        # tiện ích dev: cli.py (debug DAX không cần MCP) · test_mcp_local.py (smoke test)
