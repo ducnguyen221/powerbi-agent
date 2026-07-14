@@ -201,7 +201,7 @@ class TestBackCompat:
 class TestKnowledge:
     def test_slugify_vietnamese(self):
         from powerbi_agent import knowledge as kn
-        assert kn.slugify("Dashboard Quản Trị Doanh Nghiệp — DemoTelecom!") == "dashboard-quan-tri-sxkd-demotelecom"
+        assert kn.slugify("Dashboard Quản Trị Doanh Nghiệp — 2026!") == "dashboard-quan-tri-doanh-nghiep-2026"
         assert kn.slugify("Đơn đặt hàng") == "don-dat-hang"
         assert kn.slugify("///") == "project"
 
