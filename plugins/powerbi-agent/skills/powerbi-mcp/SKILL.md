@@ -38,7 +38,7 @@ Khi kỹ năng này được kích hoạt thông qua cấu hình MCP Server, cá
    - `list_templates()` — kit có sẵn (repo `templates/` + env `POWERBI_TEMPLATES_DIR`).
    - `apply_template(report_path, kit_dir, page_spec)` — dựng TRANG MỚI từ kit theo luật clone-and-rebind (giữ style `visualContainerObjects`, chỉ đổi name/position/fields/visualType/title). KHÔNG BAO GIỜ tự dựng layout PBIR từ đầu.
    - `distill_template(report_path, page, out_dir, sanitize?)` — chưng cất trang đẹp thành kit tái dùng; `sanitize=True` TRƯỚC khi chia sẻ/public (xóa tên bảng/cột nghiệp vụ).
-   - Quy trình dự án trọn gói 9 khâu: dùng skill **`pbi-pipeline`**.
+   - Quy trình dự án trọn gói: pha nghiệp vụ [`../kpim-analysis/SKILL.md`](../kpim-analysis/SKILL.md) → pha kỹ thuật 9 khâu [`../pbi-pipeline/SKILL.md`](../pbi-pipeline/SKILL.md).
 
 ## Chính sách an toàn dữ liệu (server enforce — không phải chỉ lời nhắc)
 

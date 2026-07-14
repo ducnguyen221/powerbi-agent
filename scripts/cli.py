@@ -10,7 +10,7 @@ if sys.stdout.encoding != 'utf-8':
 
 # Dùng CHUNG bộ nạp ADOMD.NET đa-phiên-bản của MCP server (không hardcode đường dẫn SSMS).
 # Import mcp_server_powerbi sẽ tự dò & nạp ADOMD.NET động (mọi SSMS / standalone / GAC).
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root — script nằm trong scripts/
 from mcp_server_powerbi import find_active_pbi_ports
 from pyadomd import Pyadomd
 import pandas as pd

@@ -94,3 +94,8 @@ Chưng cất tri thức:
 - `references/powerquery-m-best-practices.md` — query folding, Value.NativeQuery (EnableFolding), connector, kiểu dữ liệu, incremental.
 - `references/sql-best-practices.md` — SARGable, index/covering index, no SELEC*, pre-aggregate View/SP, DW staging, SCD.
 - `references/gotchas.md` — bẫy Date serial, blank member, STOCK không SUM, bookmark để tay, policy, ghi REPORT khi file đóng.
+- `references/powerbi-knowledge-map.md` — bản đồ kiến thức Power BI tổng (chủ đề → reference nào/khâu nào).
+
+## 🔗 Skill liên quan (cùng bộ, thư mục anh em)
+- Pha NGHIỆP VỤ trước pipeline này: [`../kpim-analysis/SKILL.md`](../kpim-analysis/SKILL.md) — khảo sát, tài liệu hóa, kế hoạch.
+- Hướng dẫn 11 tool + policy an toàn dữ liệu: [`../powerbi-mcp/SKILL.md`](../powerbi-mcp/SKILL.md).

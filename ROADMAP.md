@@ -53,7 +53,7 @@ Yêu cầu hệ: Windows (Power BI Desktop chỉ có trên Windows) · Python 3.
 | `execute_dax_local(port, model_id, dax, max_rows)` | Chạy DAX lên Desktop |
 | `execute_dax_service(dataset_id, dax, max_rows)` | Chạy DAX lên Service |
 
-Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`cli.py`), skill mô tả cách dùng.
+Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`scripts/cli.py`), skill mô tả cách dùng.
 
 ### M0 — Nền sản phẩm
 

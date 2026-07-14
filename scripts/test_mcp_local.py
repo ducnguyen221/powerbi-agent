@@ -8,7 +8,7 @@ if sys.stdout.encoding != 'utf-8':
 
 # Bộ nạp ADOMD.NET đa-phiên-bản nằm trong mcp_server_powerbi; import bên dưới sẽ tự dò & nạp
 # (mọi SSMS / ADOMD.NET standalone / GAC) — không hardcode đường dẫn SSMS.
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root — script nằm trong scripts/
 
 try:
     from mcp_server_powerbi import find_active_pbi_ports

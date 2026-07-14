@@ -13,15 +13,19 @@ dựng trang báo cáo theo template kit, và quy trình dự án chuẩn hóa.
 powerbi_agent/                  # package MCP server (Python) — query · policy · TOM · PBIR · distill
 mcp_server_powerbi.py           # entrypoint host đăng ký (shim — ĐỪNG đổi tên/di chuyển)
 plugins/powerbi-agent/skills/   # 3 skill dùng chung mọi host (nguồn DUY NHẤT — sửa ở đây)
-  kpim-analysis/                #   pha NGHIỆP VỤ: khảo sát → tài liệu hóa → kế hoạch
-  pbi-pipeline/                 #   pha KỸ THUẬT: 9 khâu Power Query → model → DAX → report
+  kpim-analysis/                #   pha NGHIỆP VỤ: khảo sát → tài liệu hóa → kế hoạch (+templates/ +scripts/)
+  pbi-pipeline/                 #   pha KỸ THUẬT: 9 khâu Power Query → model → DAX → report (+references/)
   powerbi-mcp/                  #   hướng dẫn dùng 11 tool + luật an toàn dữ liệu
 .claude-plugin/marketplace.json # cài skills dạng plugin (Claude/Codex)
 hosts/{claude,codex,antigravity}/  # hướng dẫn đăng ký RIÊNG từng host
-templates/                      # template kit báo cáo (kit.json + blocks/*.json verbatim)
+templates/                      # template kit VISUAL báo cáo cho apply_template (≠ templates tài liệu trong kpim-analysis)
+scripts/                        # tiện ích dev: cli.py (debug DAX không cần MCP) · test_mcp_local.py (smoke test)
+docs/                           # website Pages: index.html (landing) · INSTALL.html (hướng dẫn cài) · UAT-REPORT.md
 install.ps1                     # cài in-place: venv + dò ADOMD/TOM + đăng ký CẢ 3 host + copy skill
 tests/ · .github/workflows/     # pytest + ruff, CI windows-latest
 ```
+
+**INDEX chi tiết từng file:** xem bảng trong [`README.md`](README.md) §"INDEX repo".
 
 ## 2. Cài đặt (agent thực hiện được toàn bộ)
 

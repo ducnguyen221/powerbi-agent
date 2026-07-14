@@ -22,3 +22,6 @@ docs/internal/
 
 # Policy thật theo máy/dự án (cột PII nhạy cảm) — không public
 policy.json
+
+# Cache tool local
+.ruff_cache/

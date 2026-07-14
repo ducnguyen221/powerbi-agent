@@ -4,7 +4,7 @@
 .DESCRIPTION
   Loại bỏ phần không nên mang đi: .venv (máy nào tự dựng), .env (secrets), .git,
   __pycache__, *.bak.*, *.pyc, và chính các file .zip cũ.
-  Bên máy mới: giải nén -> chạy install.ps1 (xem INSTALL.html).
+  Bên máy mới: giải nén -> chạy install.ps1 (xem docs/INSTALL.html).
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File .\pack.ps1
 .EXAMPLE

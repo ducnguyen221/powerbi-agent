@@ -202,11 +202,14 @@ function Register-Claude {
         # PowerShell không can thiệp token `--`. (3) CHỈ remove sau khi chắc chắn add được
         # -> add trước với tên tạm? Không cần: add đè cùng tên sẽ lỗi "already exists",
         # nên thử add trước; nếu "already exists" thì remove rồi add lại.
+        # LƯU Ý PS 5.1: KHÔNG dùng `2>&1` ở phía PowerShell với native command khi
+        # $ErrorActionPreference=Stop — stderr bị bọc thành NativeCommandError TERMINATING
+        # và script chết giữa chừng. Redirect BÊN TRONG chuỗi cmd để cmd.exe tự gộp.
         $addCmd = "claude mcp add powerbi-mcp-bridge -s user -e PYTHONUNBUFFERED=1 -- ""$venvPy"" ""$serverPath"""
-        $out = & cmd /c $addCmd 2>&1
+        $out = & cmd /c "$addCmd 2>&1"
         if ($LASTEXITCODE -ne 0 -and "$out" -match "already exists") {
-            & cmd /c "claude mcp remove powerbi-mcp-bridge -s user" 2>&1 | Out-Null
-            $out = & cmd /c $addCmd 2>&1
+            & cmd /c "claude mcp remove powerbi-mcp-bridge -s user 2>&1" | Out-Null
+            $out = & cmd /c "$addCmd 2>&1"
         }
         if ($LASTEXITCODE -eq 0) { Ok "Claude: đăng ký qua 'claude mcp add' (scope user)."; return }
         Warn "claude CLI lỗi ($out) -> sửa .claude.json trực tiếp."

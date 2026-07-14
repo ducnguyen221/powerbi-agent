@@ -12,7 +12,7 @@ Không chỉ là "cầu nối MCP + bảo mật dữ liệu" — repo còn đón
 Hỗ trợ **Power BI Desktop (local)** · **Power BI Service (cloud)** · **PBIP/PBIR (project files)**.
 Host: **Claude Code · Codex CLI · Google Antigravity** và mọi MCP client stdio.
 
-> 🌐 Website: **[ducnguyen.vn/powerbi-agent](https://ducnguyen.vn/powerbi-agent/)** · 📘 Cài đặt chi tiết: **`INSTALL.html`** · Lộ trình: **[ROADMAP.md](ROADMAP.md)** · Kết quả UAT: **[docs/UAT-REPORT.md](docs/UAT-REPORT.md)**
+> 🌐 Website: **[ducnguyen.vn/powerbi-agent](https://ducnguyen.vn/powerbi-agent/)** · 📘 Cài đặt chi tiết: **[docs/INSTALL.html](docs/INSTALL.html)** ([bản web](https://ducnguyen.vn/powerbi-agent/INSTALL.html)) · Lộ trình: **[ROADMAP.md](ROADMAP.md)** · Kết quả UAT: **[docs/UAT-REPORT.md](docs/UAT-REPORT.md)**
 
 ## Cài bằng AI Agent (khuyến nghị — 1 câu lệnh)
 
@@ -23,7 +23,7 @@ Clone https://github.com/ducnguyen221/powerbi-agent vào ~/.mcp/powerbi-mcp rồ
 ```
 
 Agent sẽ: clone → dựng `.venv` → dò ADOMD.NET/TOM (mọi bản SSMS/standalone/GAC) → đăng ký MCP
-vào cả 3 host → copy **3 skill** (`powerbi-mcp`, `pbi-pipeline`, `kpim-analysis`) kèm references + templates. Cài tay: xem `INSTALL.html`.
+vào cả 3 host → copy **3 skill** (`powerbi-mcp`, `pbi-pipeline`, `kpim-analysis`) kèm references + templates. Cài tay: xem [docs/INSTALL.html](docs/INSTALL.html).
 
 ```powershell
 git clone https://github.com/ducnguyen221/powerbi-agent "$env:USERPROFILE\.mcp\powerbi-mcp"
@@ -131,32 +131,59 @@ scripts/                # generate_mindmaps.py, generate_project_management_xlsx
 
 Chi tiết: `plugins/powerbi-agent/skills/kpim-analysis/SKILL.md`.
 
-## Cấu trúc repo
+## 📁 INDEX repo — từng folder & file quan trọng
 
-```
-AGENTS.md               # hướng dẫn CHUẨN cho mọi agent (Claude/Codex/Antigravity) + luật multi-agent
-CLAUDE.md · GEMINI.md   # con trỏ về AGENTS.md (Codex đọc AGENTS.md native)
-powerbi_agent/          # package server (query, tom, template, distill, policy, pbir)
-mcp_server_powerbi.py   # entrypoint back-compat (host đăng ký file này)
-plugins/powerbi-agent/  # plugin pack (Claude/Codex marketplace) — NGUỒN DUY NHẤT của skills
-  skills/powerbi-mcp/       #   - hướng dẫn 11 tool + policy
-  skills/pbi-pipeline/      #   - quy trình kỹ thuật 9 khâu + references/ (DAX/M/SQL best-practices)
-  skills/kpim-analysis/     #   - quy trình phân tích KPIM + templates/ + scripts/
-.claude-plugin/         # marketplace.json — claude/codex plugin install từ git
-hosts/                  # hướng dẫn đăng ký riêng: claude/ · codex/ · antigravity/
-templates/              # kit visual kpim-business-light (sanitized) cho apply_template
-tests/                  # unit tests (CI windows-latest)
-install.ps1             # cài in-place 3 host, copy CẢ thư mục skill, idempotent
-policy.example.json     # mẫu PII blocklist
-docs/UAT-REPORT.md      # kết quả UAT trên dashboard thật
-```
+> Mọi đường dẫn dưới đây tính từ **gốc repo** — clone về đâu cũng đúng. Agent đọc
+> [`AGENTS.md`](AGENTS.md) trước khi làm việc; người mới đọc bảng này để định vị.
 
-### Cài dạng plugin (chỉ skills — không MCP/venv)
+### Gốc repo — hướng dẫn & cài đặt
 
-```bash
-claude plugin marketplace add ducnguyen221/powerbi-agent
-claude plugin install powerbi-agent@powerbi-agent
-```
+| File | Vai trò |
+|---|---|
+| [`AGENTS.md`](AGENTS.md) | **Hướng dẫn CHUẨN cho mọi agent** — bản đồ repo, luật làm việc với Power BI, giao thức điều phối multi-agent (§4). Codex đọc native. |
+| [`CLAUDE.md`](CLAUDE.md) · [`GEMINI.md`](GEMINI.md) | Con trỏ về AGENTS.md cho Claude Code / Antigravity — sửa nội dung Ở AGENTS.md. |
+| `README.md` | File này — giới thiệu sản phẩm + INDEX. |
+| [`ROADMAP.md`](ROADMAP.md) | Định vị, kiến trúc 4 tầng, milestone (M0–M3 ✅, M4 kế hoạch). |
+| [`install.ps1`](install.ps1) | **Bộ cài in-place** — venv + dò ADOMD/TOM + đăng ký MCP cả 3 host + copy skills. Idempotent. |
+| [`uninstall.ps1`](uninstall.ps1) · [`pack.ps1`](pack.ps1) | Gỡ cài / đóng zip sạch mang sang máy khác. |
+| `mcp_server_powerbi.py` | **Entrypoint MCP** — host đăng ký file này (shim, KHÔNG đổi tên/di chuyển). |
+| `pyproject.toml` · `requirements*.txt` | Packaging + dependencies (pin & loose). |
+| [`policy.example.json`](policy.example.json) | Mẫu PII blocklist → copy thành `policy.json` (gitignored) theo dự án. |
+| `.env.example` | Mẫu cấu hình Power BI Service (service principal) → `.env` (gitignored). |
+| `LICENSE` | MIT + attribution quy trình/công cụ: Duc Nguyen. |
+
+### `powerbi_agent/` — package MCP server (code chính)
+
+| File | Vai trò |
+|---|---|
+| `app.py` | Khởi tạo server: nạp ADOMD/TOM → FastMCP → đăng ký 11 tool. |
+| `tools_query.py` | Khám phá + truy vấn: `list_local_reports` · `list_tables` · `describe_table` · `execute_dax_local/_service` (đi qua policy). |
+| `policy.py` | **Tầng an toàn dữ liệu**: aggregate-only (mặc định BẬT) · PII blocklist · audit JSONL · trần dòng dimension. |
+| `tools_tom.py` | Ghi model qua TOM: `add_measure_local` · `add_relationship_local` (fallback đơn lẻ — bulk dùng modeling-mcp). |
+| `pbir.py` + `tools_template.py` | **Report layer**: đọc/ghi PBIR, `list_templates` · `apply_template` (clone-and-rebind) · `distill_template` (+ deep-sanitize). |
+| `tools_distill.py` | `distill_model_schema` — model → Markdown blueprint + Mermaid ERD. |
+| `adomd.py` · `discovery.py` · `util.py` | Dò DLL đa phiên bản SSMS · dò port Desktop · tiện ích chung. |
+
+### `plugins/powerbi-agent/skills/` — 3 skill (NGUỒN DUY NHẤT, installer copy đi các host)
+
+| Skill | Dùng khi | File quan trọng |
+|---|---|---|
+| [`kpim-analysis`](plugins/powerbi-agent/skills/kpim-analysis/SKILL.md) | **Đầu dự án** — nhận dữ liệu → khảo sát, hỏi ngược, tài liệu hóa, kế hoạch | `templates/` (8 mẫu tài liệu + xlsx + theme.json + 5 mindmap) · `scripts/` (generator mindmap/xlsx) |
+| [`pbi-pipeline`](plugins/powerbi-agent/skills/pbi-pipeline/SKILL.md) | **Thực thi kỹ thuật** — 9 khâu Power Query → model → DAX → report | `references/` — dax / powerquery-m / sql best-practices · gotchas · powerbi-knowledge-map |
+| [`powerbi-mcp`](plugins/powerbi-agent/skills/powerbi-mcp/SKILL.md) | **Tra cứu tool** — cách dùng 11 tool + luật policy + phân vai với modeling-mcp | (1 file) |
+
+Ba skill link chéo nhau bằng đường dẫn tương đối anh–em (`../<skill>/SKILL.md`) — đúng cả trong repo lẫn sau khi cài vào host.
+
+### Các folder còn lại
+
+| Folder | Vai trò |
+|---|---|
+| [`.claude-plugin/`](.claude-plugin/marketplace.json) | Marketplace manifest — cài skills dạng plugin: `claude plugin marketplace add ducnguyen221/powerbi-agent` → `claude plugin install powerbi-agent@powerbi-agent` (chỉ skills, không venv/MCP). |
+| [`hosts/`](hosts/) | Hướng dẫn đăng ký RIÊNG từng host: [`claude/`](hosts/claude/README.md) · [`codex/`](hosts/codex/README.md) · [`antigravity/`](hosts/antigravity/README.md) (kèm snippet config tay). |
+| [`templates/`](templates/kpim-business-light/README.md) | **Kit visual báo cáo** cho `apply_template` — `kpim-business-light` (12 block sanitized). ≠ `skills/kpim-analysis/templates/` (mẫu TÀI LIỆU). |
+| [`scripts/`](scripts/) | Tiện ích dev: `cli.py` (debug DAX không cần MCP: `list`/`tables`/`query`) · `test_mcp_local.py` (smoke test kết nối). |
+| [`docs/`](docs/) | Website GitHub Pages: `index.html` (landing) · [`INSTALL.html`](docs/INSTALL.html) (hướng dẫn cài chi tiết — [bản web](https://ducnguyen.vn/powerbi-agent/INSTALL.html)) · [`UAT-REPORT.md`](docs/UAT-REPORT.md) (17 ca UAT trên dashboard thật). |
+| `tests/` + `.github/workflows/` | Unit tests + CI (ruff + pytest, windows-latest). |
 
 Điều phối nhiều agent cùng lúc (Claude build · Codex review · Antigravity tài liệu hóa):
 xem **[AGENTS.md](AGENTS.md) §4** — single-writer, lock convention, artifact bàn giao chung.
