@@ -1,4 +1,4 @@
-"""Tool GHI model qua TOM (fallback nhẹ — port từ bản second machine 2026-07-11).
+"""Tool GHI model qua TOM (fallback nhẹ).
 
 LƯU Ý PHÂN VAI: thao tác modeling đầy đủ (bulk, transaction, TMDL, validate)
 nên dùng `microsoft/powerbi-modeling-mcp`. Hai tool này giữ làm fallback khi

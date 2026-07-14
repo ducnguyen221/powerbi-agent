@@ -1,8 +1,9 @@
 # Kit `kpim-business-light`
 
 Template kit mẫu đi kèm powerbi-agent — distill (đã **sanitize**) từ một trang dashboard
-quản trị doanh nghiệp thật gồm 30 visual: canvas 1280×720, nền `#DFE7F6`, card KPI reference-label
-với conditional color, combo chart, pivot table, slicer, azure map, bookmark navigator…
+quản trị doanh nghiệp production thật gồm 30 visual: canvas 1280×720, nền `#DFE7F6`,
+card KPI reference-label với conditional color, combo chart, pivot table, slicer,
+azure map, bookmark navigator…
 
 - Binding trong `blocks/*.json` là placeholder `TEMPLATE_*` — `apply_template` sẽ thay bằng
   field thật của model đích (bắt buộc truyền `fields` cho mọi block có dữ liệu).

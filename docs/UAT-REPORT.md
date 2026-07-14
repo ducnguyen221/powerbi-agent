@@ -1,8 +1,9 @@
 # UAT Report — powerbi-agent v0.2.0
 
 > Ngày: 2026-07-12 · Môi trường: Windows 11, Power BI Desktop (Store 2.155), SSMS 21 ADOMD/TOM,
-> Python 3.12 venv. Dữ liệu UAT: dashboard giảng dạy thật "Dashboard Quản Trị Doanh Nghiệp" (.pbip PBIR
-> 7 trang / 30 visual trang mẫu / model 10 bảng / 174 measure) + template kit do người dùng xây trước đó.
+> Python 3.12 venv. Dữ liệu UAT: một dashboard quản trị sản xuất-kinh doanh production thật
+> (.pbip PBIR 7 trang / 30 visual trang mẫu / model 10 bảng / 174 measure) + template kit
+> đã được kiểm chứng từ trước.
 >
 > Nguyên tắc UAT: KHÔNG sửa file gốc — apply chạy trên BẢN COPY; phiên Desktop chỉ chạy tool ĐỌC, đóng không lưu.
 
@@ -30,7 +31,7 @@ Fix: `deep_sanitize` walk toàn cây JSON + gom map tên trên toàn trang + tha
 ## UAT-02 — apply_template (kit → trang mới, trên BẢN COPY .Report)
 
 Spec: 5 visual (shape nền + cardVisual 3 measure + combo chart Category/Y/Y2 + pivotTable + slicer),
-bind field THẬT của model (`Công thức.Số KH`, `Fact_Customer.Thâm niên (nhóm)`…).
+bind field THẬT của model (measure "Số KH" từ bảng công thức, cột phân nhóm từ bảng Fact khách hàng…).
 
 | Kiểm tra | Kết quả |
 |---|---|
@@ -61,14 +62,14 @@ bind field THẬT của model (`Công thức.Số KH`, `Fact_Customer.Thâm niê
 |---|---|
 | a. `list_local_reports` → port 56600 + catalog GUID | ✅ |
 | b. `list_tables` → đủ 10 bảng, lọc bảng hệ thống | ✅ |
-| c. `describe_table 'Công thức'` → cột + 174 measure kèm expression | ✅ (sau defect #3) |
+| c. `describe_table` bảng công thức → cột + 174 measure kèm expression | ✅ (sau defect #3) |
 | d. `execute_dax_local` SUMMARIZECOLUMNS → 3 dòng dữ liệu tổng hợp thật | ✅ |
-| e. `execute_dax_local` `EVALUATE 'Fact_Customer'` → **BỊ CHẶN** bởi policy (mặc định) | ✅ |
+| e. `execute_dax_local` `EVALUATE '<bảng Fact>'` (dump thô) → **BỊ CHẶN** bởi policy (mặc định) | ✅ |
 | f. `distill_model_schema` → blueprint 10 bảng/174 measure + Mermaid ERD, ghi đúng POWERBI_DISTILL_DIR | ✅ (sau defect #3) |
 | g. Audit JSONL: verdict `allowed` (rows=3) + `blocked_raw_dump` đúng thứ tự | ✅ |
 
 **Defect #3 (phát hiện & sửa):** DMV `TMSCHEMA_COLUMNS` không có cột `[DataType]` — tên đúng là
-`[ExplicitDataType]`. Lỗi này nằm trong code gốc từ máy thứ hai → chứng tỏ `distill_report_model`
+`[ExplicitDataType]`. Lỗi tồn tại từ bản single-file trước khi hợp nhất → chứng tỏ tool distill
 bản cũ **chưa từng chạy live thành công**. Đã sửa cả describe_table + distill.
 
 **Defect #4 (phát hiện & sửa):** map enum kiểu dữ liệu sai (bằng chứng: RowNumber — luôn Int64 —
@@ -79,8 +80,8 @@ lọc thêm cột nội bộ `RowNumber-*`.
 
 - `execute_dax_service` (cloud): cần dataset publish + service principal — smoke test đường auth
   qua unit (thiếu env → lỗi rõ ràng); chưa chạy live trong đợt này.
-- `add_measure_local` / `add_relationship_local` (TOM write): KHÔNG chạy trên file giảng dạy thật
-  (tránh dirty model). Cơ chế TOM đã được chứng minh trước đó trên chính dashboard này (session
-  tạo measures hàng loạt + trang "04 · Bán Chéo & Bán Thêm").
-- Mở lại `.pbip` UAT copy trong Desktop để nghiệm thu MẮT trang mới — cần người dùng xác nhận
-  (file copy tại scratchpad `uat-report/`; muốn giữ để xem thì báo, mặc định sẽ dọn).
+- `add_measure_local` / `add_relationship_local` (TOM write): KHÔNG chạy trên file production
+  trong đợt UAT (tránh dirty model). Cơ chế TOM đã được chứng minh trước đó trên chính dashboard
+  này (đợt tạo measures hàng loạt + 1 trang báo cáo 15 visual).
+- Mở lại `.pbip` UAT copy trong Desktop để nghiệm thu MẮT trang mới — bước bắt buộc của quy trình,
+  do người dùng thực hiện (agent không nhìn thấy trang render).

@@ -1,7 +1,7 @@
-"""Distill model schema → Markdown blueprint (port từ bản second machine 2026-07-11, đã sửa).
+"""Distill model schema → Markdown blueprint (bảng/cột/measure/relationship + Mermaid ERD).
 
-Đổi tên `distill_report_model` → `distill_model_schema` (nó distill MODEL,
-không phải report template — distill template PBIR là chuyện khác, xem ROADMAP M3).
+Tên tool là `distill_model_schema` vì nó distill MODEL — distill report template (PBIR)
+là việc của tools_template.py.
 
 Đích ghi KHÔNG hardcode theo máy: tham số `output_dir` → env `POWERBI_DISTILL_DIR`
 → mặc định `~/.powerbi-agent/distilled/` (NGOÀI repo — schema model khách hàng

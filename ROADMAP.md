@@ -62,7 +62,7 @@ Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`cli.py`), skill mô
 - [x] Test suite pytest (19 unit: util/adomd-probe/policy/back-compat) + GitHub Actions (windows runner, ruff + pytest, marker `integration` skip trên CI).
 - [x] Policy khung sẵn từ M0: `POWERBI_AGGREGATE_ONLY=1` bật chặn dump thô (mặc định tắt — M1 đảo mặc định + PII blocklist + audit).
 - [x] Cài `microsoft/powerbi-modeling-mcp` song song (✔ Connected); doc phân vai trong README + SKILL.md.
-- [x] Merge nhánh nâng cấp từ máy thứ hai (branch `tom-tools`, port vào package): TOM loader + `add_measure_local` + `add_relationship_local` (`tools_tom.py`, fallback — bulk/TMDL vẫn delegate modeling-mcp) + `distill_model_schema` (`tools_distill.py`, đổi tên từ `distill_report_model`; đích ghi mặc định `~/.powerbi-agent/distilled/` NGOÀI repo, cấu hình qua `POWERBI_DISTILL_DIR`).
+- [x] Hợp nhất nhánh đóng góp single-file vào package: TOM loader + `add_measure_local` + `add_relationship_local` (`tools_tom.py`, fallback — bulk/TMDL vẫn delegate modeling-mcp) + `distill_model_schema` (`tools_distill.py`, đổi tên từ `distill_report_model`; đích ghi mặc định `~/.powerbi-agent/distilled/` NGOÀI repo, cấu hình qua `POWERBI_DISTILL_DIR`).
 
 ### M1 — Policy + Discovery (an toàn dữ liệu) — ✅ XONG 2026-07-12
 
@@ -85,7 +85,7 @@ Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`cli.py`), skill mô
 
 ### M3 — Distill + Pipeline skill — ✅ XONG 2026-07-12
 
-- [x] `distill_model_schema` (đổi tên từ bản đóng góp, đích ghi `POWERBI_DISTILL_DIR`/`~/.powerbi-agent/distilled/`) — live PASS trên model 10 bảng/174 measure + Mermaid ERD.
+- [x] `distill_model_schema` (đích ghi `POWERBI_DISTILL_DIR`/`~/.powerbi-agent/distilled/`) — live PASS trên model 10 bảng/174 measure + Mermaid ERD.
 - [x] Skill **`pbi-pipeline`** 9 khâu (điều phối 2 MCP, cổng kiểm mỗi khâu, 4 artifact, bookmark-để-tay, hỏi PII đầu dự án) — cài cả 3 host, install.ps1 copy mọi skill.
 - [x] Vòng tri thức: distill_model_schema (model→blueprint) + distill_template (trang đẹp→kit) + bài học→memory.
 
