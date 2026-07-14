@@ -222,25 +222,37 @@ function Register-Codex {
     $cfg = Join-Path $env:USERPROFILE ".codex\config.toml"
     $dir = Split-Path -Parent $cfg
     if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+    # env ghi dạng SUB-TABLE, không dùng inline `env = {...}`: Codex tự ghi lại config
+    # theo dạng sub-table, nên nếu ta ghi inline thì hai dạng cùng tồn tại -> TOML
+    # "duplicate key" -> Codex không parse nổi config -> app chết ngay lúc khởi động.
     $block = @"
 [mcp_servers.powerbi-mcp-bridge]
 command = "$pyJson"
 args = ["-u", "$srvJson"]
-env = { PYTHONUNBUFFERED = "1" }
+
+[mcp_servers.powerbi-mcp-bridge.env]
+PYTHONUNBUFFERED = "1"
 "@
     if (-not (Test-Path $cfg)) { Write-Utf8NoBom $cfg $block; Ok "Tạo mới $cfg + block MCP."; return }
     Backup-File $cfg
     $text = Get-Content $cfg -Raw -Encoding UTF8
-    if ($text -match '(?m)^\[mcp_servers\.powerbi-mcp-bridge\]') {
-        # Cập nhật block cũ (đường dẫn có thể đổi khi sang máy mới)
-        $pattern = '(?ms)^\[mcp_servers\.powerbi-mcp-bridge\].*?(?=^\[|\z)'
-        $text = [regex]::Replace($text, $pattern, ($block.TrimEnd() + "`n`n"))
-        Write-Utf8NoBom $cfg ($text.TrimEnd() + "`n")
-        Ok "Cập nhật block MCP trong $cfg"
-    } else {
-        if ($text -notmatch "`n$") { $text += "`n" }
-        Write-Utf8NoBom $cfg ($text + "`n" + $block)
-        Ok "Đã thêm block MCP vào $cfg"
+    # Phải xóa CẢ sub-table ([mcp_servers.powerbi-mcp-bridge.env]) chứ không chỉ block cha:
+    # regex cũ chỉ khớp block cha nên bỏ sót sub-table -> nó thành mồ côi và trùng key.
+    # Kết thúc match bằng lookahead `^\[` (ngoặc ĐẦU DÒNG), KHÔNG dùng [^\[]* —
+    # giá trị `args = ["-u", ...]` có `[` giữa dòng, sẽ cắt cụt block và làm hỏng file.
+    $pattern = '(?ms)^\[mcp_servers\.powerbi-mcp-bridge(?:\.[^\]\r\n]+)?\].*?(?=^\[|\z)'
+    $had = $text -match '(?m)^\[mcp_servers\.powerbi-mcp-bridge(?:\.[^\]\r\n]+)?\]'
+    $text = [regex]::Replace($text, $pattern, '')
+    if ($text -notmatch "`n$") { $text += "`n" }
+    Write-Utf8NoBom $cfg ($text.TrimEnd() + "`n`n" + $block)
+    if ($had) { Ok "Cập nhật block MCP trong $cfg" } else { Ok "Đã thêm block MCP vào $cfg" }
+
+    # Chốt an toàn: config.toml hỏng = Codex không mở được. Verify parse ngay sau khi ghi.
+    if (Test-Path $venvPy) {
+        & $venvPy -c "import tomllib,sys; tomllib.load(open(sys.argv[1],'rb'))" $cfg 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Err "config.toml KHÔNG parse được sau khi ghi. Khôi phục từ bản .bak gần nhất!"
+        } else { Info "config.toml parse OK." }
     }
 }
 function Install-Skill([string]$SkillRoot) {

@@ -5,23 +5,26 @@
 
 ## 1. Repo này là gì
 
-**powerbi-agent** = MCP server (11 tool) + 3 skill giúp AI Agent làm phân tích dữ liệu
+**powerbi-agent** = MCP server (16 tool) + 4 skill + 6 lệnh /pbi-* giúp AI Agent làm phân tích dữ liệu
 **end-to-end trên Power BI**: truy vấn DAX qua chính sách an toàn dữ liệu, khám phá/ghi model,
-dựng trang báo cáo theo template kit, và quy trình dự án chuẩn hóa.
+dựng trang báo cáo theo template kit, quy trình dự án chuẩn hóa, và Knowledge OS (§4b).
 
 ```
 powerbi_agent/                  # package MCP server (Python) — query · policy · TOM · PBIR · distill
 mcp_server_powerbi.py           # entrypoint host đăng ký (shim — ĐỪNG đổi tên/di chuyển)
-plugins/powerbi-agent/skills/   # 3 skill dùng chung mọi host (nguồn DUY NHẤT — sửa ở đây)
+plugins/powerbi-agent/skills/   # 4 skill dùng chung mọi host (nguồn DUY NHẤT — sửa ở đây)
   kpim-analysis/                #   pha NGHIỆP VỤ: khảo sát → tài liệu hóa → kế hoạch (+templates/ +scripts/)
   pbi-pipeline/                 #   pha KỸ THUẬT: 9 khâu Power Query → model → DAX → report (+references/)
-  powerbi-mcp/                  #   hướng dẫn dùng 11 tool + luật an toàn dữ liệu
+  powerbi-mcp/                  #   hướng dẫn dùng 16 tool + luật an toàn dữ liệu
+  pbi-knowledge/                #   Knowledge OS: dự án · tri thức 4 trục · timeline (luồng /pbi-*)
+plugins/powerbi-agent/commands/ # 6 lệnh /pbi-* (installer copy vào ~/.claude/commands)
+plugins/powerbi-agent/agents/   # pbi-knowledge-curator (đóng gói tri thức)
 .claude-plugin/marketplace.json # DANH MỤC chợ plugin (≠ plugin.json trong plugins/powerbi-agent/
                                 #   = manifest của plugin — 2 tầng chuẩn Claude, không trùng lặp)
 hosts/{claude,codex,antigravity}/  # hướng dẫn đăng ký RIÊNG từng host
 templates/                      # template kit VISUAL báo cáo cho apply_template (≠ templates tài liệu trong kpim-analysis)
 scripts/                        # tiện ích dev: cli.py (debug DAX không cần MCP) · test_mcp_local.py (smoke test)
-docs/                           # website Pages: index.html (landing) · INSTALL.html (hướng dẫn cài) · UAT-REPORT.md
+docs/                           # website Pages: landing + feature/ instruction/ template/ install/ · INSTALL.html · UAT-REPORT.md
 install.ps1                     # cài in-place: venv + dò ADOMD/TOM + đăng ký CẢ 3 host + copy skill
 tests/ · .github/workflows/     # pytest + ruff, CI windows-latest
 ```
@@ -134,3 +137,31 @@ Luật: (1) gọi `knowledge_status` TRƯỚC mọi quy trình tri thức — ch
 | Claude Code | `CLAUDE.md` → trỏ về đây | `~/.claude/skills/` (installer copy) hoặc plugin | `~/.claude.json` |
 | Codex CLI | `AGENTS.md` (file này, native) | `~/.codex/skills/` hoặc plugin | `~/.codex/config.toml` |
 | Antigravity | `GEMINI.md` → trỏ về đây | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/mcp_config.json` |
+
+## 7. GHI VÀO CONFIG CỦA HOST — luật CỨNG (đã trả giá 2026-07-15)
+
+Config của host (`config.toml`, `.claude.json`, `mcp_config.json`) là file **NHIỀU CHỦ CÙNG GHI**:
+host tự ghi, `install.ps1` của ta ghi, tool khác cũng ghi. Ghi sai = **host không khởi động nổi**,
+và triệu chứng nổ ra ở nơi hoàn toàn khác — rất khó lần ra.
+
+**Sự cố thật:** installer ghi `env = { PYTHONUNBUFFERED = "1" }` dạng *inline*, trong khi Codex tự
+ghi dạng *sub-table* `[mcp_servers.<name>.env]`. Hai dạng cùng tồn tại → TOML **duplicate key** →
+Codex không parse nổi config → app chết ở `windowsSandbox/setupStart`, hiện màn onboarding
+"Finish Windows setup" **và không bao giờ xin UAC** (chết trước khi kịp xin). Người dùng tưởng
+dính malware.
+
+1. **Theo convention của HOST, không theo cái mình thấy tiện.** Mở config xem entry do chính host
+   sinh ra (vd `[mcp_servers.node_repl.env]` của Codex) rồi bắt chước y hệt. Codex = sub-table.
+2. **Replace phải xóa cả block cha LẪN mọi sub-table** `[x.y.*]`. Regex chỉ khớp block cha sẽ để
+   sub-table mồ côi — trong TOML, sub-table mồ côi vẫn *ngầm tạo* bảng cha → server không có
+   `command` → host lỗi kiểu khác.
+3. **Kết thúc match bằng lookahead `^\[` (ngoặc ĐẦU DÒNG).** KHÔNG dùng `[^\[]*`: giá trị
+   `args = ["-u", ...]` có `[` giữa dòng sẽ cắt cụt block và làm hỏng file. Bẫy này đã cắn 1 lần
+   ngay trong lúc vá.
+4. **Validate parse NGAY sau khi ghi** (`python -c "import tomllib; tomllib.load(...)"` / `ConvertFrom-Json`).
+   Config hỏng = host chết; không được fail im lặng. Hỏng → báo khôi phục `.bak`.
+5. **Test = chạy installer 2 LẦN LIÊN TIẾP trên file hỏng thật.** Phải *heal* được file hỏng và
+   *idempotent* (lần 2 giống hệt lần 1). Chạy 1 lần trên file sạch không chứng minh được gì.
+6. **Host config chỉ chứa `PYTHONUNBUFFERED=1`.** MỌI tinh chỉnh theo máy (đường dẫn, policy,
+   secret) đặt ở `.env` — server tự `load_dotenv()` trong `powerbi_agent/app.py`. Đừng bao giờ
+   nhét đường dẫn máy cá nhân hay secret vào config host (nó nằm ngoài repo, không ai review được).

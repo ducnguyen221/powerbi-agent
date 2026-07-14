@@ -41,7 +41,11 @@ if ($Hosts -contains "codex") {
     if (Test-Path $cfg) {
         Backup-File $cfg
         $text = Get-Content $cfg -Raw -Encoding UTF8
-        $new = [regex]::Replace($text, '(?ms)^\[mcp_servers\.powerbi-mcp-bridge\].*?(?=^\[|\z)', '')
+        # Phải khớp CẢ sub-table ([mcp_servers.powerbi-mcp-bridge.env]): nếu chỉ xóa block cha,
+        # sub-table còn lại vẫn ngầm tạo server không có `command` -> Codex lỗi config.
+        # Lookahead `^\[` (ngoặc ĐẦU DÒNG), KHÔNG dùng [^\[]*: dòng `args = ["-u", ...]`
+        # có `[` giữa dòng, sẽ cắt cụt block và làm hỏng file.
+        $new = [regex]::Replace($text, '(?ms)^\[mcp_servers\.powerbi-mcp-bridge(?:\.[^\]\r\n]+)?\].*?(?=^\[|\z)', '')
         Write-Utf8NoBom $cfg ($new.TrimEnd() + "`n")
         Ok "Đã gỡ block khỏi $cfg"
     }

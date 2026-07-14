@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/site.css">
 <style>
-  .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+  .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:18px}
   .kit{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
     overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
   .kit:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--border-strong)}
@@ -42,7 +42,7 @@
   .detail .blocks{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
   .detail .blocks code{font-family:var(--mono);font-size:12px;background:var(--accent-weak);
     color:var(--accent-ink);border-radius:6px;padding:3px 9px}
-  .detail .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+  .detail .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:12px;margin-top:14px}
   .detail .imgs img{width:100%;border-radius:10px;border:1px solid var(--border)}
   .detail .close{float:right;cursor:pointer;color:var(--faint);font-size:22px;line-height:1;background:none;border:none}
 </style>
@@ -56,7 +56,7 @@
     <nav class="nav-links">
       <a href="../feature/">Tính năng</a>
       <a href="../instruction/">Hướng dẫn</a>
-      <a href="./" class="active">Template</a>
+      <a href="./" class="active" aria-current="page">Template</a>
       <a href="../install/">Cài đặt</a>
     </nav>
     <a class="btn btn-ghost btn-sm gh" href="https://github.com/ducnguyen221/powerbi-agent" target="_blank" rel="noopener">
@@ -74,7 +74,7 @@
     <h1>Thiết kế đã chứng minh —<br>tái tạo trong một câu lệnh.</h1>
     <p class="lead">Mỗi template là một trang báo cáo thật được "đóng khuôn": bố cục, màu sắc, thẻ KPI,
     biểu đồ giữ nguyên 100% — AI chỉ thay dữ liệu của bạn vào. Nhấn vào từng thẻ để xem chi tiết.
-    Kho này <b>tự đồng bộ</b>: distill kit mới là trang tự cập nhật.</p>
+    Kho này <b>tự đồng bộ khi build</b>: thêm kit vào repo + chạy script đồng bộ là trang có thẻ mới (chi tiết cuối trang).</p>
   </div>
 </section>
 
@@ -110,8 +110,12 @@
 (function(){
   var grid=document.getElementById('kitGrid'), detail=document.getElementById('kitDetail');
   function esc(s){var d=document.createElement('span');d.textContent=s||'';return d.innerHTML;}
+  // templates.json do build script của repo sinh (trusted), nhưng vẫn guard defense-in-depth:
+  function safeRel(u){u=String(u||'');return (/^assets\//.test(u)&&!/[<>"']/.test(u))?u:'';}
+  function safeGh(u){u=String(u||'');return /^https:\/\/github\.com\//.test(u)?u:'https://github.com/ducnguyen221/powerbi-agent';}
   function thumb(k){
-    if(k.previews && k.previews.length) return '<img src="'+esc(k.previews[0])+'" alt="'+esc(k.name)+'" loading="lazy">';
+    var p0=safeRel(k.previews&&k.previews[0]);
+    if(p0) return '<img src="'+p0+'" alt="Ảnh xem trước template '+esc(k.name)+'" loading="lazy">';
     return '<div class="ph" aria-hidden="true"><div class="hd"></div>'+
       '<div class="row"><div class="cell"><i style="height:55%"></i><i style="height:80%"></i><i style="height:35%"></i></div>'+
       '<div class="cell"><i style="height:70%"></i><i style="height:45%"></i><i style="height:60%"></i></div>'+
@@ -119,7 +123,7 @@
       '<div class="row"><div class="cell"></div><div class="cell"></div><div class="cell"></div></div></div>';
   }
   function showDetail(k){
-    var imgs = (k.previews||[]).map(function(p){return '<img src="'+esc(p)+'" alt="preview" loading="lazy">';}).join('');
+    var imgs = (k.previews||[]).map(function(p,i){var u=safeRel(p);return u?'<img src="'+u+'" alt="Ảnh mẫu '+(i+1)+' của template '+esc(k.name)+'" loading="lazy">':'';}).join('');
     detail.innerHTML =
       '<button class="close" aria-label="Đóng">×</button>'+
       '<span class="eyebrow"><span class="dot"></span>Template</span>'+
@@ -127,34 +131,41 @@
       '<p style="margin-top:10px;color:var(--muted);line-height:1.65">'+esc(k.description||'(Chưa có mô tả — thêm README.md vào thư mục kit.)')+'</p>'+
       '<div class="blocks">'+(k.blocks||[]).map(function(b){return '<code>'+esc(b)+'</code>';}).join('')+'</div>'+
       '<p style="font-size:13.5px;color:var(--faint)">Canvas '+esc((k.canvas&&k.canvas.width)+'×'+(k.canvas&&k.canvas.height))+
-      ' · '+k.n_blocks+' loại visual · tạo '+esc(k.created)+(k.sanitized?' · <b style="color:var(--ok)">đã sanitize (an toàn chia sẻ)</b>':'')+'</p>'+
+      ' · '+(Number(k.n_blocks)||0)+' loại visual · tạo '+esc(k.created)+(k.sanitized?' · <b style="color:var(--ok)">đã sanitize (an toàn chia sẻ)</b>':'')+'</p>'+
       (imgs?'<div class="imgs">'+imgs+'</div>':'')+
       '<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">'+
-      '<a class="btn btn-ghost btn-sm" href="'+esc(k.readme_url)+'" target="_blank" rel="noopener">Xem trên GitHub</a>'+
+      '<a class="btn btn-ghost btn-sm" href="'+safeGh(k.readme_url)+'" target="_blank" rel="noopener">Xem trên GitHub</a>'+
       '<button class="btn btn-primary btn-sm copy-btn" data-copy="Dùng apply_template với kit templates/'+esc(k.dir)+' dựng trang báo cáo mới trên model hiện tại, bind field phù hợp."><span class="lbl">Chép lệnh cho AI</span></button></div>';
     detail.classList.add('open');
     detail.querySelector('.close').onclick=function(){detail.classList.remove('open');};
     // re-wire copy for dynamically added button
     var btn=detail.querySelector('.copy-btn');
     btn.addEventListener('click',function(){
-      navigator.clipboard&&navigator.clipboard.writeText(btn.getAttribute('data-copy'));
-      btn.querySelector('.lbl').textContent='Đã chép';setTimeout(function(){btn.querySelector('.lbl').textContent='Chép lệnh cho AI';},1600);
+      var l=btn.querySelector('.lbl');
+      function done(ok){l.textContent=ok?'Đã chép':'Lỗi — chép tay';setTimeout(function(){l.textContent='Chép lệnh cho AI';},1600);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(btn.getAttribute('data-copy')).then(function(){done(true)},function(){done(false)});
+      } else done(false);
     });
-    detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+    detail.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});
   }
-  fetch('templates.json').then(function(r){return r.json();}).then(function(data){
+  fetch('templates.json').then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(data){
+    if(!data||!Array.isArray(data.kits)) throw new Error('schema');
     var kits=data.kits||[];
     if(!kits.length){grid.innerHTML='<p style="color:var(--muted)">Kho chưa có template public — distill kit đầu tiên của bạn theo hướng dẫn bên dưới.</p>';return;}
     grid.innerHTML=kits.map(function(k,i){
-      return '<article class="kit" data-i="'+i+'" tabindex="0" role="button" aria-label="Xem chi tiết '+esc(k.name)+'">'+
+      return '<article class="kit" data-i="'+i+'" tabindex="0" role="button" aria-controls="kitDetail" aria-expanded="false" aria-label="Xem chi tiết '+esc(k.name)+'">'+
         '<div class="kit-thumb">'+thumb(k)+'</div>'+
         '<div class="kit-body"><h3>'+esc(k.name)+'</h3>'+
-        '<div class="meta"><span>'+k.n_blocks+' loại visual</span><span>'+esc((k.canvas&&k.canvas.width)+'×'+(k.canvas&&k.canvas.height))+'</span>'+
+        '<div class="meta"><span>'+(Number(k.n_blocks)||0)+' loại visual</span><span>'+esc((k.canvas&&k.canvas.width)+'×'+(k.canvas&&k.canvas.height))+'</span>'+
         (k.sanitized?'<span class="san">sanitized</span>':'')+'</div>'+
         '<p>'+esc(k.description||'Kit visual chuẩn cho apply_template.')+'</p></div></article>';
     }).join('');
     grid.querySelectorAll('.kit').forEach(function(el){
-      var open=function(){showDetail(kits[+el.getAttribute('data-i')]);};
+      var open=function(){grid.querySelectorAll('.kit').forEach(function(x){x.setAttribute('aria-expanded','false')});el.setAttribute('aria-expanded','true');showDetail(kits[+el.getAttribute('data-i')]);};
       el.addEventListener('click',open);
       el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
     });

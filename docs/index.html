@@ -89,6 +89,7 @@
     background:radial-gradient(120% 90% at 82% -10%, var(--accent-glow), transparent 55%),
       radial-gradient(90% 70% at 8% 0%, color-mix(in srgb,var(--gold) 10%,transparent), transparent 50%)}
   .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px}.preview{max-width:560px}}
   .hero-badge{display:inline-flex;align-items:center;gap:9px;padding:6px 12px 6px 8px;border-radius:999px;
     background:var(--surface-2);border:1px solid var(--border);font-size:13px;font-weight:600;color:var(--muted);margin-bottom:22px}
   .hero-badge b{color:var(--text)}
