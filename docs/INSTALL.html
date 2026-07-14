@@ -63,7 +63,7 @@
   <div class="wrap">
     <span class="badge">v0.2 · MIT · Windows</span>
     <h1><span class="pbi">powerbi-agent</span> — AI Agent làm việc trực tiếp với Power BI</h1>
-    <p class="sub">MCP server 11 tool + 3 skill (gồm <b>quy trình phân tích KPIM</b> &amp; mẫu tài liệu hóa): truy vấn DAX có <b>chính sách an toàn dữ liệu</b>,
+    <p class="sub">MCP server 16 tool + 4 skill + 6 lệnh /pbi-* (gồm <b>quy trình phân tích KPIM</b> &amp; mẫu tài liệu hóa): truy vấn DAX có <b>chính sách an toàn dữ liệu</b>,
     dựng <b>trang báo cáo đẹp theo template</b>, và <b>quy trình phân tích end-to-end 9 khâu</b>.
     Hỗ trợ Claude Code · Codex CLI · Google Antigravity.</p>
   </div>
@@ -109,10 +109,11 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1</code></pre>
 <pre><code>claude mcp list        # phải thấy: powerbi-mcp-bridge ... ✔ Connected</code></pre>
 <p>Rồi mở 1 file <code>.pbix</code> bất kỳ trong Power BI Desktop và hỏi agent:</p>
 <pre><code>Liệt kê các báo cáo Power BI đang mở, cho tôi xem danh sách bảng và measure của model.</code></pre>
+<div class="note"><b>Bước tiếp theo (1 lần):</b> gõ <code>/pbi-setup</code> — agent hỏi bạn chỉ định <b>Knowledge Dir</b> (folder NGOÀI repo, ưu tiên Brain/knowledge base có sẵn) để lưu tri thức dự án. Sau đó: <code>/pbi-new</code> mở dự án · <code>/pbi-scan</code> quét thiết kế · <code>/pbi-done</code> đóng · <code>/pbi-pack</code> đóng gói · <code>/pbi-recall</code> gợi nhớ. Danh sách đầy đủ + luồng: README.</div>
 <p>Agent gọi <span class="tool">list_local_reports</span> → <span class="tool">list_tables</span> →
 <span class="tool">describe_table</span> là cài đặt <span class="ok">thành công</span>.</p>
 
-<h2><span class="n">4</span>11 tool có gì</h2>
+<h2><span class="n">4</span>16 tool có gì</h2>
 <table>
   <tr><th>Nhóm</th><th>Tool</th><th>Chức năng</th></tr>
   <tr><td rowspan="3">Khám phá</td><td><code>list_local_reports</code></td><td>Báo cáo Desktop đang mở (port + model ID)</td></tr>
@@ -125,7 +126,12 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1</code></pre>
   <tr><td rowspan="3">Template 🎨</td><td><code>list_templates</code></td><td>Kit báo cáo có sẵn</td></tr>
   <tr><td><code>apply_template</code></td><td>Dựng trang mới từ kit — style giữ nguyên 100%</td></tr>
   <tr><td><code>distill_template</code></td><td>Trang đẹp → kit tái dùng (sanitize trước khi chia sẻ)</td></tr>
-  <tr><td>Tri thức</td><td><code>distill_model_schema</code></td><td>Model → blueprint Markdown + Mermaid ERD</td></tr>
+  <tr><td rowspan="2">Distill</td><td><code>distill_model_schema</code></td><td>Model → blueprint Markdown + Mermaid ERD</td></tr>
+  <tr><td><code>distill_report_design</code></td><td>Quét TRỌN báo cáo: mọi trang + theme + DESIGN + CATALOG</td></tr>
+  <tr><td rowspan="4">Knowledge OS 🧠</td><td><code>knowledge_status</code></td><td>Kiểm tra Knowledge Dir + hiện trạng</td></tr>
+  <tr><td><code>setup_knowledge</code></td><td>Thiết lập Knowledge Dir user chỉ định (ngoài repo)</td></tr>
+  <tr><td><code>init_project</code></td><td>Mở dự án mới projects/&lt;slug&gt;/</td></tr>
+  <tr><td><code>log_timeline</code></td><td>Ghi lịch sử/bài học vào TIMELINE.md</td></tr>
 </table>
 
 <h2><span class="n">5</span>Chạy kèm powerbi-modeling của Microsoft (khuyến nghị)</h2>

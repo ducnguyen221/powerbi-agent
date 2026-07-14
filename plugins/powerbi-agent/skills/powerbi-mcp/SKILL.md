@@ -38,6 +38,11 @@ Khi kỹ năng này được kích hoạt thông qua cấu hình MCP Server, cá
    - `list_templates()` — kit có sẵn (repo `templates/` + env `POWERBI_TEMPLATES_DIR`).
    - `apply_template(report_path, kit_dir, page_spec)` — dựng TRANG MỚI từ kit theo luật clone-and-rebind (giữ style `visualContainerObjects`, chỉ đổi name/position/fields/visualType/title). KHÔNG BAO GIỜ tự dựng layout PBIR từ đầu.
    - `distill_template(report_path, page, out_dir, sanitize?)` — chưng cất trang đẹp thành kit tái dùng; `sanitize=True` TRƯỚC khi chia sẻ/public (xóa tên bảng/cột nghiệp vụ).
+9. **Distill & Knowledge OS:**
+   - `distill_report_design(report_path, project?, out_dir?)` — quét TRỌN báo cáo: mọi trang + theme + DESIGN.md + REPORT_CATALOG.md (hồ sơ thiết kế toàn dự án, mặc định vào Knowledge Dir).
+   - `knowledge_status()` — GỌI ĐẦU TIÊN trước mọi quy trình tri thức; chưa setup thì hỏi user chỉ định folder.
+   - `setup_knowledge(path)` / `init_project(name)` / `log_timeline(project, event, lesson?, link?)` — thiết lập Knowledge Dir, mở dự án, ghi timeline. Luồng đầy đủ: [`../pbi-knowledge/SKILL.md`](../pbi-knowledge/SKILL.md).
+
    - Quy trình dự án trọn gói: pha nghiệp vụ [`../kpim-analysis/SKILL.md`](../kpim-analysis/SKILL.md) → pha kỹ thuật 9 khâu [`../pbi-pipeline/SKILL.md`](../pbi-pipeline/SKILL.md).
 
 ## Chính sách an toàn dữ liệu (server enforce — không phải chỉ lời nhắc)

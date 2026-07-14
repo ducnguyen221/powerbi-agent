@@ -98,6 +98,24 @@ Mọi vai đều đọc được an toàn đồng thời — tool ĐỌC (list/d
 2. `list_local_reports` xác nhận trạng thái Desktop; kiểm tra `.pbi-write-lock`.
 3. Làm phần việc của vai mình; cập nhật artifact; xóa lock nếu mình tạo.
 
+## 4b. Knowledge OS — dự án, tri thức, timeline (luồng /pbi-*)
+
+Tri thức làm việc sống ở **Knowledge Dir do USER chỉ định NGOÀI repo** (`knowledge.config.json`
+gitignored — mỗi máy tự khai báo). Cơ chế đầy đủ: skill `pbi-knowledge`.
+
+| Lệnh (Claude) / luồng (host khác) | Làm gì |
+|---|---|
+| `/pbi-setup` | Hỏi user chỉ định Knowledge Dir (ưu tiên Brain có sẵn) → `setup_knowledge` |
+| `/pbi-new <tên>` | `init_project` + đọc kinh nghiệm cũ + chạy kpim-analysis → pbi-pipeline |
+| `/pbi-scan <path>` | `distill_report_design` — hồ sơ thiết kế trọn báo cáo vào projects/<slug>/design/ |
+| `/pbi-done` | Checklist đóng dự án + distill + `log_timeline` + pack |
+| `/pbi-pack` | Agent `pbi-knowledge-curator` đóng gói bài học 4 trục (dedup, Why/How-to-apply) |
+| `/pbi-recall <từ khóa>` | Tra INDEX/TIMELINE/knowledge — "đã từng làm gì tương tự" |
+
+Luật: (1) gọi `knowledge_status` TRƯỚC mọi quy trình tri thức — chưa setup thì DỪNG hỏi user;
+(2) mọi file dự án ghi vào `projects/<slug>/`; (3) Knowledge Dir KHÔNG BAO GIỜ commit;
+đường duy nhất ra repo public = user ra lệnh + sanitize + review.
+
 ## 5. Quy ước phát triển repo (khi agent sửa CODE repo này)
 
 - Python 3.11+, ruff (line 120), pytest — chạy `pytest tests -m "not integration"` + ruff trước commit.

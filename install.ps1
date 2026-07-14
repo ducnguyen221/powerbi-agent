@@ -261,6 +261,17 @@ function Install-Skill([string]$SkillRoot) {
             Info "Skill $($_.Name) (full) -> $dst"
         }
     }
+
+    # Claude: copy thêm 6 lệnh /pbi-* vào ~/.claude/commands (host khác dùng skill pbi-knowledge)
+    if ($SkillRoot -like "*\.claude\skills") {
+        $cmdSrc = Join-Path $Root "plugins\powerbi-agent\commands"
+        $cmdDst = Join-Path (Split-Path -Parent $SkillRoot) "commands"
+        if (Test-Path $cmdSrc) {
+            if (-not (Test-Path $cmdDst)) { New-Item -ItemType Directory -Path $cmdDst -Force | Out-Null }
+            Copy-Item (Join-Path $cmdSrc "*.md") $cmdDst -Force
+            Info "Commands /pbi-* -> $cmdDst"
+        }
+    }
 }
 
 if ($SkipHosts) {

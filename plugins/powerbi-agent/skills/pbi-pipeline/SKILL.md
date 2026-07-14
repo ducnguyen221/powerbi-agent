@@ -75,7 +75,7 @@ Mỗi dự án sinh đủ 4 artifact (chuẩn OpcOS): **PLAN** (khâu 0 — trư
 (model/report đổi gì) · **VERIFICATION** (cổng kiểm từng khâu + audit log) · **HANDOFF**
 (cách refresh/publish + việc tay còn lại).
 Chưng cất tri thức:
-- `distill_model_schema` → blueprint model (measure dictionary + ERD) vào thư mục dự án/knowledge base user chỉ định.
+- `distill_model_schema` + `distill_report_design` → blueprint model + hồ sơ thiết kế vào `projects/<slug>/design/` (Knowledge Dir — cơ chế: [`../pbi-knowledge/SKILL.md`](../pbi-knowledge/SKILL.md)); `log_timeline` ghi mốc; cuối dự án chạy luồng /pbi-done + /pbi-pack.
 - Trang báo cáo đẹp được user duyệt → `distill_template` thành kit tái dùng cho dự án sau.
 - Bài học quy trình (bẫy mới, root-cause) → memory của agent.
 

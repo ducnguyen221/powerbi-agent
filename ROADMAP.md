@@ -97,7 +97,7 @@ Kèm: installer in-place 3 host (`install.ps1`), CLI debug (`scripts/cli.py`), s
 - [ ] Versioned release + CHANGELOG.
 - [ ] (Cân nhắc) Đăng MCP registry/marketplace cộng đồng.
 
-### M5 — Knowledge OS: dự án, tri thức, timeline (PLAN — chờ duyệt)
+### M5 — Knowledge OS: dự án, tri thức, timeline — ✅ CORE XONG 2026-07-14 (v0.3.0)
 
 > Mục tiêu: repo public sạch, nhưng mọi tri thức làm việc (dự án, kinh nghiệm, template riêng)
 > chảy về **Knowledge Dir do USER CHỈ ĐỊNH ngoài repo** (vd folder Brain có sẵn của user).
@@ -136,37 +136,37 @@ Cấu trúc Knowledge Dir chuẩn (tool tự dựng):
 
 Hiện có: `distill_model_schema` (model) + `distill_template` (1 trang → kit). **Thiếu: quét CẢ báo cáo.**
 
-- [ ] Tool MCP `distill_report_design(report_path, out_dir)` — quét toàn bộ `*.Report`:
+- [x] Tool MCP `distill_report_design(report_path, out_dir)` — quét toàn bộ `*.Report`:
   mọi trang (blueprint per-page: visual/vị trí/binding), **theme** (StaticResources/SharedResources
   + RegisteredResources → trích `theme.json` dùng lại được), `report.json` settings,
   tổng hợp `DESIGN.md` (palette/font/canvas/pattern nhận diện được) + `REPORT_CATALOG.md`
   (Report → Page → Visual). Kết hợp distill_model_schema = trọn bộ hồ sơ thiết kế 1 project.
-- [ ] Command `/pbi-scan <path .pbip>` — chạy trọn: scan design + model → ghi `projects/<slug>/design/`.
-- [ ] Tư vấn lưu template ĐỒNG BỘ: KHÔNG commit cả .pbip vào repo (nặng + lộ nghiệp vụ);
+- [x] Command `/pbi-scan <path .pbip>` — chạy trọn: scan design + model → ghi `projects/<slug>/design/`.
+- [x] Tư vấn lưu template ĐỒNG BỘ: KHÔNG commit cả .pbip vào repo (nặng + lộ nghiệp vụ);
   chuẩn = kit per-page sanitize → `templates/` repo, còn **full project + kit thô → Knowledge Dir**.
 
 #### 5.2 Quy trình #2 — Project Management (`projects/`)
 
-- [ ] Command `/pbi-project init <tên>` → dựng `projects/<slug>/` theo skeleton + đăng ký INDEX/TIMELINE.
-- [ ] Skill `pbi-knowledge` (mới): luật "làm việc qua MCP này = có project folder"; mọi tài liệu
+- [x] Command `/pbi-new` (đổi tên gọn từ /pbi-project init <tên>` → dựng `projects/<slug>/` theo skeleton + đăng ký INDEX/TIMELINE.
+- [x] Skill `pbi-knowledge` (mới): luật "làm việc qua MCP này = có project folder"; mọi tài liệu
   KPIM (kpim-analysis) ghi thẳng vào đây; cuối dự án bắt buộc HANDOFF + distill.
-- [ ] `/pbi-project close` → checklist đóng dự án: đủ 4 artifact? design/ đã distill? bài học đã
+- [x] `/pbi-done` (đổi tên gọn từ /pbi-project close) → checklist đóng dự án: đủ 4 artifact? design/ đã distill? bài học đã
   rút? → đề xuất trang đẹp nào đáng `distill_template` thành kit (sanitize → repo, thô → riêng).
-- [ ] Reference chéo: PROJECT.md ↔ kit đã sinh ↔ knowledge/ entry ↔ TIMELINE — bằng relative link.
+- [x] Reference chéo: PROJECT.md ↔ kit đã sinh ↔ knowledge/ entry ↔ TIMELINE — bằng relative link.
 
 #### 5.3 Quy trình #3 — Đóng gói tri thức theo 4 trục
 
-- [ ] Agent **`pbi-knowledge-curator`** (định nghĩa trong `plugins/powerbi-agent/agents/`):
+- [x] Agent **`pbi-knowledge-curator`** (định nghĩa trong `plugins/powerbi-agent/agents/`):
   đọc projects/ mới hoàn thành hoặc theo chu kỳ → rút bài học TÁI DÙNG → phân loại vào
   `knowledge/{tech-stack, industry, business-domain, powerbi}/` — dedup (cập nhật file cũ
   thay vì tạo trùng), mỗi bài học có **Why + How to apply**, cập nhật INDEX.
-- [ ] Command `/pbi-knowledge pack [project]` — kích hoạt curator cho 1 dự án vừa xong hoặc quét tổng.
-- [ ] Khi làm dự án MỚI: kpim-analysis pha Research đọc `knowledge/` khớp domain trước khi hỏi user
+- [x] Command `/pbi-pack` (gọn từ /pbi-knowledge pack [project]` — kích hoạt curator cho 1 dự án vừa xong hoặc quét tổng.
+- [x] Khi làm dự án MỚI: kpim-analysis pha Research đọc `knowledge/` khớp domain trước khi hỏi user
   (agent "có kinh nghiệm" thật).
 
 #### 5.4 Quy trình #4 — Timeline tự học
 
-- [ ] `TIMELINE.md` chuẩn append-only: `| ngày | dự án | việc | bài học/kit sinh ra | link |`.
+- [x] `TIMELINE.md` chuẩn append-only: `| ngày | dự án | việc | bài học/kit sinh ra | link |`.
 - [ ] Curator tự append khi `pack`; `/pbi-timeline [từ khóa]` để agent tra "đã từng làm gì tương tự".
 
 #### 5.5 Phân vai agent trong Knowledge OS

@@ -6,6 +6,6 @@
     "email": "ducnguyen.ams@gmail.com"
   },
   "plugins": [
-    { "name": "powerbi-agent", "source": "./plugins/powerbi-agent", "version": "0.2.0" }
+    { "name": "powerbi-agent", "source": "./plugins/powerbi-agent", "version": "0.3.0" }
   ]
 }

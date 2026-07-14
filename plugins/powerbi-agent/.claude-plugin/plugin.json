@@ -1,6 +1,6 @@
 {
   "name": "powerbi-agent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Skills for AI Agents working directly with Power BI: kpim-analysis (business analysis process), pbi-pipeline (9-step technical pipeline), powerbi-mcp (tool guide + data-safety policy). Requires the powerbi-agent MCP server (install.ps1 in repo root).",
   "author": {
     "name": "Duc Nguyen",

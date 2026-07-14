@@ -25,3 +25,6 @@ policy.json
 
 # Cache tool local
 .ruff_cache/
+
+# Knowledge OS — config máy cá nhân (trỏ Brain/Knowledge Dir riêng)
+knowledge.config.json

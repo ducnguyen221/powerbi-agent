@@ -16,6 +16,11 @@ Bộ quy trình + template biến AI Agent thành **chuyên gia phân tích dữ
 
 ## 5 pha (làm theo THỨ TỰ, mỗi pha có cổng kiểm)
 
+### Pha -1 — KHỞI TẠO (Knowledge OS)
+0. Gọi tool `knowledge_status` → `init_project(<tên dự án>)` — MỌI output của quy trình này ghi vào
+   `projects/<slug>/` trong Knowledge Dir. Đọc `knowledge/` khớp domain + `TIMELINE.md` để NẠP KINH
+   NGHIỆM CŨ trước khi hỏi user (luồng: [`../pbi-knowledge/SKILL.md`](../pbi-knowledge/SKILL.md)).
+
 ### Pha 0 — RESEARCH (Đọc – Hiểu – Hỏi ngược)
 1. Đọc mọi tài liệu + bộ dữ liệu (schema, sample, nguồn) → ghi `RESEARCH_NOTES.md` (tổng quan tài liệu + dữ liệu + domain).
 2. Suy luận + research bổ sung (internet, Microsoft Learn, domain) → chuẩn bị tư vấn.

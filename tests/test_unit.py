@@ -198,6 +198,42 @@ class TestBackCompat:
         } <= names
 
 
+class TestKnowledge:
+    def test_slugify_vietnamese(self):
+        from powerbi_agent import knowledge as kn
+        assert kn.slugify("Dashboard Quản Trị Doanh Nghiệp — DemoTelecom!") == "dashboard-quan-tri-sxkd-demotelecom"
+        assert kn.slugify("Đơn đặt hàng") == "don-dat-hang"
+        assert kn.slugify("///") == "project"
+
+    def test_resolve_root_env(self, tmp_path, monkeypatch):
+        from powerbi_agent import knowledge as kn
+        monkeypatch.setenv("POWERBI_KNOWLEDGE_DIR", str(tmp_path))
+        assert kn.resolve_root() == os.path.join(str(tmp_path), "powerbi-agent")
+
+    def test_resolve_root_none_when_unset(self, monkeypatch):
+        from powerbi_agent import knowledge as kn
+        monkeypatch.delenv("POWERBI_KNOWLEDGE_DIR", raising=False)
+        monkeypatch.setattr(kn, "CONFIG_FILE", "Z:/khong/ton/tai.json")
+        assert kn.resolve_root() is None
+
+    def test_skeleton_and_timeline_and_index(self, tmp_path):
+        from powerbi_agent import knowledge as kn
+        root = str(tmp_path / "powerbi-agent")
+        kn.ensure_skeleton(root)
+        for ax in kn.KNOWLEDGE_AXES:
+            assert os.path.isdir(os.path.join(root, "knowledge", ax))
+        assert os.path.exists(os.path.join(root, "INDEX.md"))
+        kn.append_timeline(root, "dự án A", "Khởi tạo", "bài học", "projects/a/")
+        tl = open(os.path.join(root, "TIMELINE.md"), encoding="utf-8").read()
+        assert "dự án A" in tl and "Khởi tạo" in tl
+        kn.register_project_in_index(root, "a", "dự án A")
+        idx = open(os.path.join(root, "INDEX.md"), encoding="utf-8").read()
+        assert "projects/a/PROJECT.md" in idx
+        # idempotent
+        kn.register_project_in_index(root, "a", "dự án A")
+        assert idx == open(os.path.join(root, "INDEX.md"), encoding="utf-8").read()
+
+
 class TestDistill:
     def test_output_dir_param_wins(self, monkeypatch):
         from powerbi_agent.tools_distill import _resolve_output_dir
