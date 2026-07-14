@@ -197,10 +197,19 @@ function Merge-McpJson([string]$Path) {
 function Register-Claude {
     Info "Claude Code..."
     if (Get-Command claude -ErrorAction SilentlyContinue) {
-        & claude mcp remove powerbi-mcp-bridge -s user 2>$null | Out-Null
-        & claude mcp add powerbi-mcp-bridge -s user -e PYTHONUNBUFFERED=1 -- $venvPy -u $serverPath
+        # BẪY ĐÃ TRẢ GIÁ: (1) KHÔNG thêm cờ `-u` sau `--` — parser của claude CLI nuốt nó
+        # và lệnh add FAIL (PYTHONUNBUFFERED=1 đã đủ unbuffered). (2) Gọi qua cmd /c để
+        # PowerShell không can thiệp token `--`. (3) CHỈ remove sau khi chắc chắn add được
+        # -> add trước với tên tạm? Không cần: add đè cùng tên sẽ lỗi "already exists",
+        # nên thử add trước; nếu "already exists" thì remove rồi add lại.
+        $addCmd = "claude mcp add powerbi-mcp-bridge -s user -e PYTHONUNBUFFERED=1 -- ""$venvPy"" ""$serverPath"""
+        $out = & cmd /c $addCmd 2>&1
+        if ($LASTEXITCODE -ne 0 -and "$out" -match "already exists") {
+            & cmd /c "claude mcp remove powerbi-mcp-bridge -s user" 2>&1 | Out-Null
+            $out = & cmd /c $addCmd 2>&1
+        }
         if ($LASTEXITCODE -eq 0) { Ok "Claude: đăng ký qua 'claude mcp add' (scope user)."; return }
-        Warn "claude CLI lỗi -> sửa .claude.json trực tiếp."
+        Warn "claude CLI lỗi ($out) -> sửa .claude.json trực tiếp."
     } else { Warn "Không thấy 'claude' CLI -> sửa .claude.json trực tiếp." }
     Merge-McpJson (Join-Path $env:USERPROFILE ".claude.json")
 }
@@ -232,16 +241,21 @@ env = { PYTHONUNBUFFERED = "1" }
     }
 }
 function Install-Skill([string]$SkillRoot) {
-    # Copy MỌI skill trong skill\<name>\SKILL.md (powerbi-mcp, pbi-pipeline, ...)
-    $skillBase = Join-Path $Root "skill"
+    # Copy MỌI skill (powerbi-mcp, pbi-pipeline, kpim-analysis, ...) — nguồn duy nhất:
+    # plugins\powerbi-agent\skills\ (fallback layout cũ skill\ cho bản clone cũ).
+    # Copy CẢ thư mục: SKILL.md + references\ + templates\ + scripts\ + assets\
+    $skillBase = Join-Path $Root "plugins\powerbi-agent\skills"
+    if (-not (Test-Path $skillBase)) { $skillBase = Join-Path $Root "skill" }
     if (-not (Test-Path $skillBase)) { return }
     Get-ChildItem -Path $skillBase -Directory | ForEach-Object {
         $src = Join-Path $_.FullName "SKILL.md"
         if (Test-Path $src) {
             $dst = Join-Path $SkillRoot $_.Name
             if (-not (Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
-            Copy-Item $src (Join-Path $dst "SKILL.md") -Force
-            Info "Skill $($_.Name) -> $dst"
+            # copy toàn bộ nội dung skill (bỏ __pycache__ và out/ tạm)
+            Copy-Item (Join-Path $_.FullName "*") $dst -Recurse -Force `
+                -Exclude "__pycache__","out" -ErrorAction SilentlyContinue
+            Info "Skill $($_.Name) (full) -> $dst"
         }
     }
 }

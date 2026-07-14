@@ -1,0 +1,53 @@
+{
+  "name": "KPIM Mart Business Light",
+  "dataColors": [
+    "#0F9D8F",
+    "#2B6FD6",
+    "#E8730C",
+    "#3A8A2B",
+    "#7D1E8C",
+    "#12776E",
+    "#D64545",
+    "#6B7A90",
+    "#2B3FD6",
+    "#0FA0B0"
+  ],
+  "foreground": "#1F2A3A",
+  "foregroundNeutralSecondary": "#6B7A90",
+  "background": "#F5F7FA",
+  "backgroundLight": "#EEF2F9",
+  "backgroundNeutral": "#DDE5F2",
+  "tableAccent": "#0F9D8F",
+  "good": "#3A8A2B",
+  "neutral": "#E8A30C",
+  "bad": "#D64545",
+  "maximum": "#12776E",
+  "center": "#E8A30C",
+  "minimum": "#D64545",
+  "textClasses": {
+    "title": { "fontFace": "Segoe UI Semibold", "fontSize": 16, "color": "#12776E" },
+    "header": { "fontFace": "Segoe UI Semibold", "fontSize": 12, "color": "#1F2A3A" },
+    "label": { "fontFace": "Segoe UI", "fontSize": 10, "color": "#1F2A3A" },
+    "callout": { "fontFace": "Segoe UI Semibold", "fontSize": 28, "color": "#0F9D8F" }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#FFFFFF" } }, "transparency": 0 }],
+        "border": [{ "show": true, "color": { "solid": { "color": "#E1E7F0" } }, "radius": 8 }],
+        "visualHeaderTooltip": [{ "show": false }],
+        "title": [{ "show": true, "fontColor": { "solid": { "color": "#12776E" } }, "fontSize": 12, "fontFamily": "Segoe UI Semibold" }],
+        "outspacePane": [{ "backgroundColor": { "solid": { "color": "#F5F7FA" } } }]
+      }
+    },
+    "page": {
+      "*": { "background": [{ "color": { "solid": { "color": "#F5F7FA" } }, "transparency": 0 }] }
+    },
+    "card": {
+      "*": { "labels": [{ "color": { "solid": { "color": "#0F9D8F" } }, "fontSize": 28 }] }
+    },
+    "slicer": {
+      "*": { "background": [{ "color": { "solid": { "color": "#FFFFFF" } } }] }
+    }
+  }
+}

@@ -87,3 +87,10 @@ Chưng cất tri thức:
 4. **Không interleave write 2 MCP cùng lúc** — modeling xong SaveChanges rồi mới quay lại query/report.
 5. **Dữ liệu thô ở lại engine** — mọi con số vào chat đều là kết quả tổng hợp (policy đang enforce).
 6. **Hỏi PII đầu dự án** — cột nào nhạy cảm → policy.json trước khi chạm dữ liệu.
+
+## 📚 Tài liệu kỹ thuật tham chiếu (references/)
+Đọc khi cần chi tiết kỹ thuật (nguồn Microsoft Learn + kinh nghiệm KPIM):
+- `references/dax-best-practices.md` — VAR, DIVIDE, date table, calculation groups, time-intelligence, measure family.
+- `references/powerquery-m-best-practices.md` — query folding, Value.NativeQuery (EnableFolding), connector, kiểu dữ liệu, incremental.
+- `references/sql-best-practices.md` — SARGable, index/covering index, no SELEC*, pre-aggregate View/SP, DW staging, SCD.
+- `references/gotchas.md` — bẫy Date serial, blank member, STOCK không SUM, bookmark để tay, policy, ghi REPORT khi file đóng.

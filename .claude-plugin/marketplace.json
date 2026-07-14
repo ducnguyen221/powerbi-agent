@@ -1,0 +1,11 @@
+{
+  "name": "powerbi-agent",
+  "description": "AI Agent × Power BI — skills marketplace: 9-step analysis pipeline, KPIM analysis process, tool guide with data-safety policy. MCP server + venv installed separately via install.ps1.",
+  "owner": {
+    "name": "Duc Nguyen",
+    "email": "ducnguyen.ams@gmail.com"
+  },
+  "plugins": [
+    { "name": "powerbi-agent", "source": "./plugins/powerbi-agent", "version": "0.2.0" }
+  ]
+}
