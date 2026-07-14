@@ -14,6 +14,8 @@ $ErrorActionPreference = "Stop"
 $Root  = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $venvPy = Join-Path $Root ".venv\Scripts\python.exe"
+# Override cho CI/test (không có venv): dùng python chỉ định để merge/validate config
+if (-not (Test-Path $venvPy) -and $env:POWERBI_INSTALL_PYTHON) { $venvPy = $env:POWERBI_INSTALL_PYTHON }
 function Info($m){Write-Host "[i] $m" -ForegroundColor Cyan}
 function Ok($m){Write-Host "[OK] $m" -ForegroundColor Green}
 function Warn($m){Write-Host "[!] $m" -ForegroundColor Yellow}

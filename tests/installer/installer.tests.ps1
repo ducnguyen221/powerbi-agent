@@ -21,13 +21,13 @@ function Run-Install([string]$HostsArg) {
     $env:USERPROFILE = $FakeHome
     & powershell -NoProfile -ExecutionPolicy Bypass -Command "
         `$env:USERPROFILE='$FakeHome';
-        `$env:Path='C:\Windows\System32;C:\Windows';
+        `$env:Path='C:\Windows\System32;C:\Windows'; `$env:POWERBI_INSTALL_PYTHON='$venvPy';
         & '$RepoRoot\install.ps1' -SkipVenv -Hosts $HostsArg" *>&1 | Out-String
 }
 function Run-Uninstall([string]$HostsArg) {
     & powershell -NoProfile -ExecutionPolicy Bypass -Command "
         `$env:USERPROFILE='$FakeHome';
-        `$env:Path='C:\Windows\System32;C:\Windows';
+        `$env:Path='C:\Windows\System32;C:\Windows'; `$env:POWERBI_INSTALL_PYTHON='$venvPy';
         & '$RepoRoot\uninstall.ps1' -Hosts $HostsArg" *>&1 | Out-String
 }
 function Toml-Valid([string]$p) {

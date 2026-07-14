@@ -81,6 +81,8 @@ if ((-not (Test-Path $envFile)) -and (Test-Path $envEx)) {
 # 1) PYTHON VENV + DEPENDENCIES
 # ============================================================
 $venvPy = Join-Path $Root ".venv\Scripts\python.exe"
+# Override cho CI/test (không có venv): dùng python chỉ định để merge/validate config
+if (-not (Test-Path $venvPy) -and $env:POWERBI_INSTALL_PYTHON) { $venvPy = $env:POWERBI_INSTALL_PYTHON }
 
 if ($SkipVenv) {
     Warn "Bỏ qua venv/pip (-SkipVenv)."
