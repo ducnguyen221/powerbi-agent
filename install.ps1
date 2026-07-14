@@ -166,32 +166,53 @@ $pyJson  = $venvPy.Replace('\','/')
 $srvJson = $serverPath.Replace('\','/')
 
 function Merge-McpJson([string]$Path) {
+    # BẪY ĐÃ TÁI HIỆN (audit 2026-07-15): KHÔNG round-trip JSON của host bằng PS 5.1.
+    #   (1) ~/.claude.json thật chứa key rỗng "" -> ConvertFrom-Json PS 5.1 CRASH luôn
+    #       ("value of argument name is not valid") -> nhánh fallback này chưa bao giờ chạy nổi.
+    #   (2) ConvertTo-Json quá -Depth thì ÂM THẦM biến tầng sâu hơn thành chuỗi '@{n=}' (mất dữ liệu).
+    # => Merge bằng Python của venv (json chuẩn: không depth limit, không sợ key rỗng,
+    #    ensure_ascii=False giữ tiếng Việt) + VALIDATE parse lại sau khi ghi.
     if (-not (Test-Path $Path)) {
         $dir = Split-Path -Parent $Path
         if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
         Write-Utf8NoBom $Path "{`n  `"mcpServers`": {}`n}"
         Info "Tạo mới $Path"
     }
+    if (-not (Test-Path $venvPy)) {
+        Warn "Không có venv Python ($venvPy) để merge JSON an toàn -> BỎ QUA $Path."
+        Warn "  Chạy lại install.ps1 KHÔNG kèm -SkipVenv, hoặc thêm tay block powerbi-mcp-bridge (xem hosts/)."
+        return
+    }
     Backup-File $Path
-    try {
-        $raw = Get-Content $Path -Raw -Encoding UTF8
-        if ([string]::IsNullOrWhiteSpace($raw)) { $raw = "{}" }
-        $json = $raw | ConvertFrom-Json
-    } catch { Err "Đọc JSON $Path lỗi ($($_.Exception.Message)). Có .bak, bỏ qua."; return }
-    if (-not $json) { $json = [PSCustomObject]@{} }
-    if (-not ($json.PSObject.Properties.Name -contains "mcpServers")) {
-        $json | Add-Member -NotePropertyName mcpServers -NotePropertyValue ([PSCustomObject]@{})
-    }
-    $entry = [PSCustomObject]@{
-        type="stdio"; command=$pyJson; args=@("-u",$srvJson); env=[PSCustomObject]@{ PYTHONUNBUFFERED="1" }
-    }
-    if ($json.mcpServers.PSObject.Properties.Name -contains "powerbi-mcp-bridge") {
-        $json.mcpServers."powerbi-mcp-bridge" = $entry
-    } else {
-        $json.mcpServers | Add-Member -NotePropertyName "powerbi-mcp-bridge" -NotePropertyValue $entry
-    }
-    Write-Utf8NoBom $Path ($json | ConvertTo-Json -Depth 40)
-    Ok "Đã ghi cấu hình MCP vào $Path"
+    $mergePy = @'
+import json, sys
+path, py, srv = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(path, encoding="utf-8-sig") as f:
+    raw = f.read().strip()
+data = json.loads(raw) if raw else {}
+if not isinstance(data, dict):
+    sys.exit("root JSON khong phai object")
+data.setdefault("mcpServers", {})["powerbi-mcp-bridge"] = {
+    "type": "stdio", "command": py, "args": ["-u", srv],
+    "env": {"PYTHONUNBUFFERED": "1"},
+}
+out = json.dumps(data, ensure_ascii=False, indent=2)
+json.loads(out)  # validate truoc khi ghi
+import os
+tmp = path + ".pbi-tmp"
+with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+    f.write(out + "\n")
+json.load(open(tmp, encoding="utf-8"))  # validate ban tam
+os.replace(tmp, path)                    # thay the ATOMIC — khong co trang thai nua vời
+json.load(open(path, encoding="utf-8"))  # validate sau khi ghi
+print("MERGE_OK")
+'@
+    $tmpPy = Join-Path $env:TEMP "pbi-merge-mcp.py"
+    Write-Utf8NoBom $tmpPy $mergePy
+    $out = & $venvPy $tmpPy $Path $pyJson $srvJson 2>&1
+    Remove-Item $tmpPy -Force -ErrorAction SilentlyContinue
+    if ("$out" -match "MERGE_OK") { Ok "Đã ghi + validate cấu hình MCP trong $Path" }
+    else { Err "Merge JSON thất bại ($out). File gốc còn nguyên trong .bak.$Stamp — KHÔNG ghi đè."; }
 }
 
 function Register-Claude {
@@ -233,9 +254,12 @@ args = ["-u", "$srvJson"]
 [mcp_servers.powerbi-mcp-bridge.env]
 PYTHONUNBUFFERED = "1"
 "@
-    if (-not (Test-Path $cfg)) { Write-Utf8NoBom $cfg $block; Ok "Tạo mới $cfg + block MCP."; return }
+    # File chưa có / RỖNG đi chung một đường với file có sẵn (thống nhất format => idempotent
+    # ngay từ lần đầu; và Get-Content -Raw file rỗng trả $null -> .TrimEnd() nổ NullReference).
     Backup-File $cfg
-    $text = Get-Content $cfg -Raw -Encoding UTF8
+    $text = ''
+    if (Test-Path $cfg) { $text = Get-Content $cfg -Raw -Encoding UTF8 }
+    if ($null -eq $text) { $text = '' }
     # Phải xóa CẢ sub-table ([mcp_servers.powerbi-mcp-bridge.env]) chứ không chỉ block cha:
     # regex cũ chỉ khớp block cha nên bỏ sót sub-table -> nó thành mồ côi và trùng key.
     # Kết thúc match bằng lookahead `^\[` (ngoặc ĐẦU DÒNG), KHÔNG dùng [^\[]* —
@@ -243,8 +267,9 @@ PYTHONUNBUFFERED = "1"
     $pattern = '(?ms)^\[mcp_servers\.powerbi-mcp-bridge(?:\.[^\]\r\n]+)?\].*?(?=^\[|\z)'
     $had = $text -match '(?m)^\[mcp_servers\.powerbi-mcp-bridge(?:\.[^\]\r\n]+)?\]'
     $text = [regex]::Replace($text, $pattern, '')
-    if ($text -notmatch "`n$") { $text += "`n" }
-    Write-Utf8NoBom $cfg ($text.TrimEnd() + "`n`n" + $block)
+    $body = $text.TrimEnd()
+    if ($body) { $body += "`n`n" }
+    Write-Utf8NoBom $cfg ($body + $block + "`n")
     if ($had) { Ok "Cập nhật block MCP trong $cfg" } else { Ok "Đã thêm block MCP vào $cfg" }
 
     # Chốt an toàn: config.toml hỏng = Codex không mở được. Verify parse ngay sau khi ghi.
@@ -266,7 +291,10 @@ function Install-Skill([string]$SkillRoot) {
         $src = Join-Path $_.FullName "SKILL.md"
         if (Test-Path $src) {
             $dst = Join-Path $SkillRoot $_.Name
-            if (-not (Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
+            # MIRROR, không phải merge: xóa bản đích cũ trước khi copy — file đã bị xóa/đổi tên
+            # ở nguồn sẽ không thành "xác sống" drift ở host (đã tái hiện bằng harness audit).
+            if (Test-Path $dst) { Remove-Item $dst -Recurse -Force }
+            New-Item -ItemType Directory -Path $dst -Force | Out-Null
             # copy toàn bộ nội dung skill (bỏ __pycache__ và out/ tạm)
             Copy-Item (Join-Path $_.FullName "*") $dst -Recurse -Force `
                 -Exclude "__pycache__","out" -ErrorAction SilentlyContinue
@@ -280,6 +308,8 @@ function Install-Skill([string]$SkillRoot) {
         $cmdDst = Join-Path (Split-Path -Parent $SkillRoot) "commands"
         if (Test-Path $cmdSrc) {
             if (-not (Test-Path $cmdDst)) { New-Item -ItemType Directory -Path $cmdDst -Force | Out-Null }
+            # mirror phần lệnh pbi-* (lệnh khác của user giữ nguyên)
+            Get-ChildItem $cmdDst -Filter "pbi-*.md" -ErrorAction SilentlyContinue | Remove-Item -Force
             Copy-Item (Join-Path $cmdSrc "*.md") $cmdDst -Force
             Info "Commands /pbi-* -> $cmdDst"
         }

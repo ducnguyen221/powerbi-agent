@@ -28,3 +28,6 @@ policy.json
 
 # Knowledge OS — config máy cá nhân (trỏ Brain/Knowledge Dir riêng)
 knowledge.config.json
+
+# Residue cua bo test installer (fake USERPROFILE)
+tests/installer/fakehome/
