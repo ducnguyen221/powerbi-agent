@@ -1,29 +1,43 @@
 # powerbi-agent
 
-**MCP server + bộ skill biến AI Agent thành chuyên gia phân tích làm việc TRỰC TIẾP trên Power BI** —
-từ truy vấn DAX có chính sách an toàn dữ liệu, đến dựng trang báo cáo đẹp theo template,
-đến **quy trình phân tích KPIM** tài liệu hóa & chuẩn hóa dữ liệu, và pipeline thực thi end-to-end 9 khâu.
+**🌐 Language:** **English** · [Tiếng Việt](README.vi.md)
 
-Không chỉ là "cầu nối MCP + bảo mật dữ liệu" — repo còn đóng gói sẵn:
-- 🧠 **Quy trình phân tích KPIM** (skill `kpim-analysis`): Research → Key Information (5 mindmap + tài liệu chuẩn) → Planning → Implementation → Monitoring.
-- 📄 **Bộ mẫu tài liệu hóa dữ liệu & phân tích báo cáo**: `PROJECT.md`, `DATA_DICTIONARY.md`, `METRICS_CALCULATION.md`, `DOMAIN_DIMENSION.md`, `REPORTS.md`, `DESIGN.md` + `theme.json`, `Project_Management.xlsx` (6 sheet), 5 mindmap PNG — nhân bản cho dự án mới.
-- 📚 **Tài liệu kỹ thuật** DAX / Power Query (M) / SQL best-practices (nguồn Microsoft Learn) trong `plugins/powerbi-agent/skills/pbi-pipeline/references/`.
+> ⚠️ **Windows only.** Power BI Desktop ships for Windows only, so powerbi-agent's tools that
+> talk to Desktop **require Windows 10/11**. There is no macOS/Linux build.
 
-Hỗ trợ **Power BI Desktop (local)** · **Power BI Service (cloud)** · **PBIP/PBIR (project files)**.
-Host: **Claude Code · Codex CLI · Google Antigravity** và mọi MCP client stdio.
+**An MCP server + skill pack that turns any AI Agent into a data analyst working DIRECTLY on Power BI** —
+from DAX queries behind a data-safety policy, to building polished report pages from templates,
+to the **KPIM analysis process** for documenting & standardizing data, plus an end-to-end 9-step pipeline.
 
-> 🌐 Website: **[ducnguyen.vn/powerbi-agent](https://ducnguyen.vn/powerbi-agent/)** · 📘 Cài đặt chi tiết: **[docs/INSTALL.html](docs/INSTALL.html)** ([bản web](https://ducnguyen.vn/powerbi-agent/INSTALL.html)) · Lộ trình: **[ROADMAP.md](ROADMAP.md)** · Kết quả UAT: **[docs/UAT-REPORT.md](docs/UAT-REPORT.md)**
+More than "an MCP bridge + data safety" — the repo also ships:
+- 🧠 **KPIM analysis process** (skill `kpim-analysis`): Research → Key Information (5 mindmaps + standard docs) → Planning → Implementation → Monitoring.
+- 📄 **Ready-to-use documentation templates**: `PROJECT.md`, `DATA_DICTIONARY.md`, `METRICS_CALCULATION.md`, `DOMAIN_DIMENSION.md`, `REPORTS.md`, `DESIGN.md` + `theme.json`, `Project_Management.xlsx` (6 sheets), 5 mindmap PNGs — clone them for a new project.
+- 📚 **Technical references** for DAX / Power Query (M) / SQL best practices (sourced from Microsoft Learn) in `plugins/powerbi-agent/skills/pbi-pipeline/references/`.
 
-## Cài bằng AI Agent (khuyến nghị — 1 câu lệnh)
+Supports **Power BI Desktop (local)** · **Power BI Service (cloud)** · **PBIP/PBIR (project files)**.
+Hosts: **Claude Code · Codex CLI · Google Antigravity** and any stdio MCP client.
 
-Dán vào agent của bạn (Claude Code / Codex / Antigravity):
+> 🌐 Website: **[ducnguyen.vn/powerbi-agent](https://ducnguyen.vn/powerbi-agent/)** · 📘 Full install guide: **[docs/INSTALL.html](docs/INSTALL.html)** ([web](https://ducnguyen.vn/powerbi-agent/INSTALL.html)) · Roadmap: **[ROADMAP.md](ROADMAP.md)** · UAT results: **[docs/UAT-REPORT.md](docs/UAT-REPORT.md)**
+
+## 🏛️ Built by KPIM — shared free with the community
+
+The analysis process and report templates in powerbi-agent were built by **[KPIM](https://kpim.vn)** —
+a consultancy that delivers **Data & Business Intelligence** solutions and provides **in-depth Data & AI
+training**. The workflows (the "KPIM workflow") and report templates here are **distilled by many KPIM
+experts** from real-world engagements and shared **FREE** with the community, students and data
+practitioners. Learn more: **[kpim.vn](https://kpim.vn)**.
+
+## Install with your AI Agent (recommended — one line)
+
+Paste into your agent (Claude Code / Codex / Antigravity):
 
 ```
-Clone https://github.com/ducnguyen221/powerbi-agent vào ~/.mcp/powerbi-mcp rồi chạy install.ps1 trong đó (đọc script trước khi chạy), sau đó restart MCP host.
+Clone https://github.com/ducnguyen221/powerbi-agent into ~/.mcp/powerbi-mcp, then run install.ps1 there (read the script first), and restart the MCP host.
 ```
 
-Agent sẽ: clone → dựng `.venv` → dò ADOMD.NET/TOM (mọi bản SSMS/standalone/GAC) → đăng ký MCP
-vào cả 3 host → copy **4 skill** (`powerbi-mcp`, `pbi-pipeline`, `kpim-analysis`, `pbi-knowledge`) kèm references + templates + 6 lệnh /pbi-*. Cài tay: xem [docs/INSTALL.html](docs/INSTALL.html).
+The agent will: clone → build `.venv` → probe ADOMD.NET/TOM (any SSMS/standalone/GAC) → register the MCP
+across all 3 hosts → copy **4 skills** (`powerbi-mcp`, `pbi-pipeline`, `kpim-analysis`, `pbi-knowledge`)
+plus references, templates and the 6 `/pbi-*` commands. Manual install: see [docs/INSTALL.html](docs/INSTALL.html).
 
 ```powershell
 git clone https://github.com/ducnguyen221/powerbi-agent "$env:USERPROFILE\.mcp\powerbi-mcp"
@@ -31,224 +45,233 @@ cd "$env:USERPROFILE\.mcp\powerbi-mcp"
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Yêu cầu: Windows (Power BI Desktop chỉ có trên Windows) · Python 3.11+ · ADOMD.NET
-(có sẵn nếu cài SSMS; hoặc [Analysis Services client libraries](https://learn.microsoft.com/en-us/analysis-services/client-libraries)).
+Requirements: Windows (Power BI Desktop is Windows-only) · Python 3.11+ · ADOMD.NET
+(bundled with SSMS; or install the [Analysis Services client libraries](https://learn.microsoft.com/en-us/analysis-services/client-libraries)).
 
-## 🧭 Bắt đầu thế nào — 3 bước
+## 🧭 Getting started — 3 steps
 
-1. **Cài** (lệnh ở trên) → restart host → agent có 16 tool + 4 skill + 6 lệnh.
-2. **`/pbi-setup`** — agent hỏi bạn chỉ định **Knowledge Dir** (folder NGOÀI repo — ưu tiên
-   knowledge base/Brain có sẵn của bạn) để lưu tri thức dự án. Làm 1 lần.
-3. **`/pbi-new <tên dự án>`** — bắt đầu: agent tự đọc kinh nghiệm cũ → khảo sát → tài liệu hóa →
-   dựng model + báo cáo → `/pbi-done` đóng dự án là tri thức tự đóng gói cho lần sau.
+1. **Install** (command above) → restart the host → the agent gains 16 tools + 4 skills + 6 commands.
+2. **`/pbi-setup`** — the agent asks you to designate a **Knowledge Dir** (a folder OUTSIDE the repo —
+   ideally your existing knowledge base / brain) to store project knowledge. One-time.
+3. **`/pbi-new <project name>`** — start: the agent reads prior lessons → surveys → documents → builds
+   model + report → `/pbi-done` closes the project and its knowledge is packaged for next time.
 
-## ⚡ 6 lệnh (Claude Code; Codex/Antigravity dùng skill `pbi-knowledge` cùng luồng)
+## ⚡ 6 commands (Claude Code; Codex/Antigravity use skill `pbi-knowledge` for the same flow)
 
-| Lệnh | Làm gì |
+| Command | What it does |
 |---|---|
-| `/pbi-setup` | Khai báo Knowledge Dir (lần đầu) — nơi lưu TOÀN BỘ tri thức, ngoài repo |
-| `/pbi-new <tên>` | Mở dự án mới: folder riêng + đọc kinh nghiệm cũ + chạy quy trình phân tích |
-| `/pbi-scan <path.pbip>` | Quét TRỌN thiết kế 1 báo cáo: mọi trang + theme + DESIGN.md + catalog |
-| `/pbi-done` | Đóng dự án: checklist bàn giao + distill + timeline + đóng gói tri thức |
-| `/pbi-pack [dự án]` | Đóng gói bài học vào 4 trục: tech-stack · industry · business-domain · powerbi |
-| `/pbi-recall <từ khóa>` | "Đã từng làm gì tương tự?" — tra dự án cũ, bài học, kit tái dùng |
+| `/pbi-setup` | Declare the Knowledge Dir (once) — where ALL knowledge lives, outside the repo |
+| `/pbi-new <name>` | Open a project: its own folder + read prior lessons + run the analysis process |
+| `/pbi-scan <path.pbip>` | Scan a whole report's design: every page + theme + DESIGN.md + catalog |
+| `/pbi-done` | Close a project: handoff checklist + distill + timeline + knowledge packaging |
+| `/pbi-pack [project]` | Package lessons into 4 axes: tech-stack · industry · business-domain · powerbi |
+| `/pbi-recall <keyword>` | "Have we done something like this?" — look up past projects, lessons, reusable kits |
 
-## 🔄 Luồng skill & agent (ai làm gì, khi nào)
+## 🔄 Skill & agent flow (who does what, when)
 
 ```
  /pbi-new ──▶ skill kpim-analysis ──▶ skill pbi-pipeline ──▶ /pbi-done ──▶ agent pbi-knowledge-curator
-             (NGHIỆP VỤ: khảo sát,     (KỸ THUẬT: 9 khâu       (checklist     (đóng gói bài học 4 trục,
-              hỏi ngược, tài liệu       Power Query→model→      + distill      dedup, INDEX, TIMELINE)
-              KPIM, kế hoạch)           DAX→trang báo cáo)      + timeline)
+             (BUSINESS: survey,        (TECHNICAL: 9 steps    (checklist    (package lessons on 4 axes,
+              question, KPIM docs,      Power Query→model→     + distill     dedup, INDEX, TIMELINE)
+              planning)                 DAX→report pages)      + timeline)
                     ▲                          │
-                    └── đọc knowledge/ cũ      └── tool MCP (16) + policy 🛡️ + template kit 🎨
- /pbi-recall ◀── INDEX + TIMELINE + knowledge/ ◀────────────────┘  (skill pbi-knowledge = cơ chế chung)
+                    └── reads prior knowledge/ └── MCP tools (16) + policy 🛡️ + template kit 🎨
+ /pbi-recall ◀── INDEX + TIMELINE + knowledge/ ◀──────────────┘  (skill pbi-knowledge = the mechanism)
 ```
 
-- **Skill `powerbi-mcp`** = sổ tay tra cứu 16 tool + luật policy (agent tự tra khi cần).
-- **Điều phối NHIỀU agent cùng lúc** (Claude build · Codex review · Antigravity tài liệu): [AGENTS.md](AGENTS.md) §4.
+- **Skill `powerbi-mcp`** = a reference for the 16 tools + policy rules (the agent consults it as needed).
+- **Coordinating MANY agents at once** (Claude builds · Codex reviews · Antigravity documents): [AGENTS.md](AGENTS.md) §4.
 
-## 🔐 Cơ chế Knowledge Dir (riêng tư mặc định)
+## 🔐 The Knowledge Dir mechanism (private by default)
 
-- Tri thức dự án (tài liệu, kinh nghiệm, kit thô) sống ở **folder BẠN chỉ định, ngoài repo** —
-  `knowledge.config.json` gitignored, mỗi máy tự khai báo, không ai nhận tri thức của ai qua git.
-- Cấu trúc tự dựng: `projects/<dự án>/` · `knowledge/{4 trục}/` · `templates/` (kit riêng) ·
+- Project knowledge (docs, lessons, raw kits) lives in **a folder YOU designate, outside the repo** —
+  `knowledge.config.json` is gitignored, each machine declares its own, and nobody receives anyone
+  else's knowledge through git.
+- Auto-created structure: `projects/<project>/` · `knowledge/{4 axes}/` · `templates/` (private kits) ·
   `INDEX.md` · `TIMELINE.md`.
-- Đường duy nhất đưa tri thức riêng → repo public: bạn chủ động ra lệnh + `sanitize=True` + review.
+- The only path from private knowledge → the public repo: you explicitly ask + `sanitize=True` + review.
 
-## 16 tool
+## 16 tools
 
-| Nhóm | Tool | Chức năng |
+| Group | Tool | What it does |
 |---|---|---|
-| **Khám phá** | `list_local_reports` | Báo cáo Desktop đang mở (port + model ID) |
-| | `list_tables` | Bảng trong model (lọc bảng hệ thống) |
-| | `describe_table` | Cột + kiểu dữ liệu + measure của 1 bảng |
-| **Truy vấn** 🛡️ | `execute_dax_local` | DAX lên Desktop — qua policy an toàn dữ liệu |
-| | `execute_dax_service` | DAX lên Service (MSAL, token cache) — qua policy |
-| **Ghi model** | `add_measure_local` | Tạo/sửa measure qua TOM |
-| | `add_relationship_local` | Tạo relationship Many-to-One qua TOM |
-| **Template** 🎨 | `list_templates` | Kit báo cáo có sẵn |
-| | `apply_template` | Dựng TRANG MỚI từ kit — clone-and-rebind, style giữ nguyên |
-| | `distill_template` | Chưng cất trang đẹp thành kit tái dùng (sanitize được) |
+| **Discover** | `list_local_reports` | Reports open in Desktop (port + model ID) |
+| | `list_tables` | Tables in the model (system tables filtered out) |
+| | `describe_table` | One table's columns + data types + measures |
+| **Query** 🛡️ | `execute_dax_local` | DAX against Desktop — through the data-safety policy |
+| | `execute_dax_service` | DAX against Service (MSAL, token cache) — through the policy |
+| **Write model** | `add_measure_local` | Create/update a measure via TOM |
+| | `add_relationship_local` | Create a Many-to-One relationship via TOM |
+| **Template** 🎨 | `list_templates` | Available report kits |
+| | `apply_template` | Build a NEW page from a kit — clone-and-rebind, style preserved |
+| | `distill_template` | Distill a polished page into a reusable kit (sanitizable) |
 | **Distill** | `distill_model_schema` | Model → Markdown blueprint + Mermaid ERD |
-| | `distill_report_design` | Quét TRỌN báo cáo: mọi trang + theme + DESIGN + CATALOG |
-| **Knowledge OS** 🧠 | `knowledge_status` | Knowledge Dir đã setup chưa + tóm tắt hiện trạng |
-| | `setup_knowledge` | Thiết lập Knowledge Dir user chỉ định (ngoài repo) |
-| | `init_project` | Tạo folder dự án `projects/<slug>/` + INDEX + TIMELINE |
-| | `log_timeline` | Ghi sự kiện/bài học vào TIMELINE.md (append-only) |
+| | `distill_report_design` | Scan a whole report: every page + theme + DESIGN + CATALOG |
+| **Knowledge OS** 🧠 | `knowledge_status` | Is the Knowledge Dir set up + current state |
+| | `setup_knowledge` | Set up the user-designated Knowledge Dir (outside the repo) |
+| | `init_project` | Create a project folder `projects/<slug>/` + INDEX + TIMELINE |
+| | `log_timeline` | Log an event/lesson to TIMELINE.md (append-only) |
 
-## 🛡️ Chính sách an toàn dữ liệu (enforce ở server, không phải lời nhắc)
+## 🛡️ Data-safety policy (enforced server-side, not just a prompt hint)
 
-Nguyên tắc: **dữ liệu thô ở lại trong engine Power BI — chỉ kết quả tổng hợp vào context LLM.**
+Principle: **raw data stays inside the Power BI engine — only aggregated results reach the LLM context.**
 
-- **aggregate-only (mặc định BẬT):** `EVALUATE 'Bảng'` / `EVALUATE ALL(...)` bị từ chối kèm hướng
-  dẫn viết lại bằng `SUMMARIZECOLUMNS`/`TOPN`/measure. Tắt: `POWERBI_AGGREGATE_ONLY=0`.
-- **PII blocklist:** copy `policy.example.json` → `policy.json`, liệt kê cột cấm project
-  (SĐT, CMND, email…). Cột bị chặn ở MỌI truy vấn.
-- **Audit log:** mọi truy vấn ghi `~/.powerbi-agent/audit/*.jsonl` (verdict + số dòng) —
-  bằng chứng kiểm toán "không dump dữ liệu thô".
-- **Trần dimension:** kết quả có cột chữ bị siết 200 dòng (thuần measure không giới hạn).
-- *Trung thực về giới hạn:* đây là guard chống rò rỉ **sơ ý** — bảo mật cứng vẫn là RLS trên
-  model + service principal quyền tối thiểu.
+- **aggregate-only (ON by default):** `EVALUATE '<table>'` / `EVALUATE ALL(...)` are refused with a
+  rewrite hint toward `SUMMARIZECOLUMNS`/`TOPN`/measures. Turn off: `POWERBI_AGGREGATE_ONLY=0`.
+- **PII blocklist:** copy `policy.example.json` → `policy.json`, list columns to block from projection
+  (phone, national ID, email…). Blocked in every query.
+- **Audit log:** every query is written to `~/.powerbi-agent/audit/*.jsonl` (verdict + row count) —
+  an audit trail proving "no raw data dumped".
+- **Dimension cap:** results with a text column are capped at 200 rows (measure-only is unlimited).
+- *Honest about limits:* this is a guard against accidental leaks — real hard security is still RLS on
+  the model + a least-privilege service principal.
 
-## 🎨 Template kit — báo cáo đẹp tái tạo được
+## 🎨 Template kit — beautiful reports, reproducible
 
-Bài học đắt giá: **layout agent tự dựng từ đầu luôn xấu; clone trang đã chứng minh + đổi binding thì đẹp.**
-`apply_template` biến luật đó thành code: giữ nguyên `visualContainerObjects` (style), chỉ đổi
-name/position/fields/visualType/title.
+A hard-won lesson: **layouts an AI builds from scratch always look off; clone a proven page + rebind the
+fields and it looks great.** `apply_template` turns that rule into code: it keeps `visualContainerObjects`
+(the style) intact and only changes name/position/fields/visualType/title.
 
-Kit = thư mục text git-được:
+A kit is a git-friendly text folder:
 
 ```
-templates/kpim-business-light/     # kit mẫu đi kèm (đã sanitize)
+templates/kpim-business-light/     # bundled sample kit (sanitized)
   kit.json          # meta: canvas, blocks, roles
-  blueprint.md      # bản đồ trang mẫu: 30 visual, vị trí, binding
-  blocks/*.json     # visual.json VERBATIM mỗi loại (card KPI, combo chart, pivot, slicer, map…)
-  _page.json        # page settings + nền
+  blueprint.md      # source page map: 30 visuals, positions, bindings
+  blocks/*.json     # verbatim visual.json per type (KPI card, combo chart, pivot, slicer, map…)
+  _page.json        # page settings + background
 ```
 
-Vòng tri thức: trang nào user khen đẹp → `distill_template` thành kit → dự án sau `apply_template` tái tạo.
-Kit chứa binding nghiệp vụ thật thì để NGOÀI repo (env `POWERBI_TEMPLATES_DIR`); muốn chia sẻ → `sanitize=True`.
+Knowledge loop: a page you like → `distill_template` into a kit → later projects `apply_template` to reproduce it.
+A kit with real business bindings stays on your machine (env `POWERBI_TEMPLATES_DIR`); to share publicly → `sanitize=True`.
 
-## 🤝 Chạy song song microsoft/powerbi-modeling-mcp (khuyến nghị)
+## 🤝 Runs alongside microsoft/powerbi-modeling-mcp (recommended)
 
-powerbi-agent **không xây lại modeling** — delegate cho MCP chính chủ Microsoft:
+powerbi-agent **doesn't rebuild modeling** — it delegates to Microsoft's official MCP:
 
 ```bash
 claude mcp add powerbi-modeling -s user -- npx -y "@microsoft/powerbi-modeling-mcp@latest" --start
 ```
 
-| Việc | Server |
+| Task | Server |
 |---|---|
-| Query DAX + policy, schema discovery, template/PBIR report layer, distill | **powerbi-agent** |
-| Tạo/sửa table/column/measure/relationship, bulk + transaction, TMDL, DAX validate | **powerbi-modeling** (Microsoft) |
+| DAX query + policy, schema discovery, template/PBIR report layer, distill | **powerbi-agent** |
+| Create/update tables/columns/measures/relationships, bulk + transactions, TMDL, DAX validate | **powerbi-modeling** (Microsoft) |
 
-## 📐 Quy trình 9 khâu (skill `pbi-pipeline`)
+## 📐 The 9-step pipeline (skill `pbi-pipeline`)
 
-Agent làm dự án Power BI trọn gói theo thứ tự chuẩn, mỗi khâu có cổng kiểm:
+The agent runs a full Power BI project in a standard order, each step with a runnable check:
 
-1. Kết nối dữ liệu (Power Query, M parameter) → 2. Transform M (kiểu dữ liệu tường minh)
-→ 3. Mô hình hóa star schema + relationship → 4. Measure/calc column DAX (verify từng cái)
-→ 5. Truy vấn tổng hợp (policy gác) → 6+7. Visual & trang báo cáo từ template
-→ 8. Nâng cao (tooltip, drill-through, parameters; bookmark để tay) → 9. Artifact + chưng cất tri thức.
+1. Connect data (Power Query, M parameters) → 2. Transform M (explicit data types)
+→ 3. Star-schema modeling + relationships → 4. DAX measures/calc columns (verify each)
+→ 5. Aggregated queries (policy-guarded) → 6+7. Visuals & report pages from templates
+→ 8. Advanced (tooltips, drill-through, parameters; bookmarks by hand) → 9. Artifacts + knowledge distillation.
 
-Chi tiết: `plugins/powerbi-agent/skills/pbi-pipeline/SKILL.md` (tự cài vào host khi chạy install.ps1).
-Kèm **tài liệu kỹ thuật** (nguồn Microsoft Learn): `plugins/powerbi-agent/skills/pbi-pipeline/references/` — `dax-best-practices.md`, `powerquery-m-best-practices.md`, `sql-best-practices.md`, `gotchas.md`.
+Details: `plugins/powerbi-agent/skills/pbi-pipeline/SKILL.md` (installed to the host by install.ps1).
+Includes **technical references** (from Microsoft Learn): `plugins/powerbi-agent/skills/pbi-pipeline/references/` — `dax-best-practices.md`, `powerquery-m-best-practices.md`, `sql-best-practices.md`, `gotchas.md`.
 
-## 📋 Quy trình phân tích KPIM (skill `kpim-analysis`) — tài liệu hóa & chuẩn hóa dữ liệu
+## 📋 The KPIM analysis process (skill `kpim-analysis`) — document & standardize data
 
-Ngoài lớp kỹ thuật, repo đóng gói sẵn **quy trình phân tích KPIM** để agent nhận **một bộ dữ liệu + tài liệu** → tự khảo sát, hỏi ngược người dùng, và sinh ra **bộ tài liệu nghiệp vụ chuẩn hóa** trước khi dựng báo cáo. 5 pha:
+Beyond the technical layer, the repo ships the **KPIM analysis process** so the agent can take **a dataset +
+docs** → survey it, ask you clarifying questions, and produce a **standardized business-documentation set**
+before building any report. 5 phases:
 
-**Research** (đọc data + hỏi ngược) → **Key Information** (5 thành phần: Requirements · Analytics Questions · Data · Metrics & Dimensions · Result & Delivery) → **Planning** (Excel task 2 cấp) → **Implementation** (bàn giao `pbi-pipeline`) → **Monitoring**.
+**Research** (read data + ask back) → **Key Information** (5 parts: Requirements · Analytics Questions · Data ·
+Metrics & Dimensions · Result & Delivery) → **Planning** (2-level Excel tasks) → **Implementation** (hand off to
+`pbi-pipeline`) → **Monitoring**.
 
-Đầu ra chuẩn (thư mục `plugins/powerbi-agent/skills/kpim-analysis/templates/`, kèm worked-example "KPIM Mart"):
+Standard output (folder `plugins/powerbi-agent/skills/kpim-analysis/templates/`, with a worked "KPIM Mart" example):
 
 ```
-PROJECT.md              # tổng hợp Key Information (5 bảng + mindmap)
-RESEARCH_NOTES.md       # ghi chú input + bộ câu hỏi ngược cho user
-DATA_DICTIONARY.md      # bảng/nguồn/trường dữ liệu
-METRICS_CALCULATION.md  # danh sách measure DAX theo nhóm
-DOMAIN_DIMENSION.md     # chiều phân tích + tư duy nghiệp vụ
-REPORTS.md              # danh sách báo cáo (Report Group → Report → Page) + visual
-DESIGN.md + theme.json  # tư duy thiết kế + theme Power BI import chạy ngay
-Project_Management.xlsx # 6 sheet: KEY INFORMATION, PLANNING, DATA DICTIONARY, METRICS_CALCULATION, DOMAIN_DIMENSION, REPORT
+PROJECT.md              # Key Information summary (5 tables + mindmap)
+RESEARCH_NOTES.md       # input notes + clarifying questions for the user
+DATA_DICTIONARY.md      # tables/sources/fields
+METRICS_CALCULATION.md  # DAX measures grouped
+DOMAIN_DIMENSION.md     # analysis dimensions + business reasoning
+REPORTS.md              # report list (Report Group → Report → Page) + visuals
+DESIGN.md + theme.json  # design thinking + an importable Power BI theme
+Project_Management.xlsx # 6 sheets: KEY INFORMATION, PLANNING, DATA DICTIONARY, METRICS_CALCULATION, DOMAIN_DIMENSION, REPORT
 mindmaps/*.png          # Key Objectives / Questions / Data / Analysis / Report
 scripts/                # generate_mindmaps.py, generate_project_management_xlsx.py, ...
 ```
 
-Chi tiết: `plugins/powerbi-agent/skills/kpim-analysis/SKILL.md`.
+Details: `plugins/powerbi-agent/skills/kpim-analysis/SKILL.md`.
 
-## 📁 INDEX repo — từng folder & file quan trọng
+## 📁 Repo INDEX — key folders & files
 
-> Mọi đường dẫn dưới đây tính từ **gốc repo** — clone về đâu cũng đúng. Agent đọc
-> [`AGENTS.md`](AGENTS.md) trước khi làm việc; người mới đọc bảng này để định vị.
+> All paths are relative to the **repo root** — correct wherever you clone. Agents read
+> [`AGENTS.md`](AGENTS.md) before working; newcomers use this table to orient.
 
-### Gốc repo — hướng dẫn & cài đặt
+### Root — guides & install
 
-| File | Vai trò |
+| File | Role |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | **Hướng dẫn CHUẨN cho mọi agent** — bản đồ repo, luật làm việc với Power BI, giao thức điều phối multi-agent (§4). Codex đọc native. |
-| [`CLAUDE.md`](CLAUDE.md) · [`GEMINI.md`](GEMINI.md) | Con trỏ về AGENTS.md cho Claude Code / Antigravity — sửa nội dung Ở AGENTS.md. |
-| `README.md` | File này — giới thiệu sản phẩm + INDEX. |
-| [`ROADMAP.md`](ROADMAP.md) | Định vị, kiến trúc 4 tầng, milestone (M0–M3 ✅, M4 kế hoạch). |
-| [`install.ps1`](install.ps1) | **Bộ cài in-place** — venv + dò ADOMD/TOM + đăng ký MCP cả 3 host + copy skills. Idempotent. |
-| [`uninstall.ps1`](uninstall.ps1) · [`pack.ps1`](pack.ps1) | Gỡ cài / đóng zip sạch mang sang máy khác. |
-| `mcp_server_powerbi.py` | **Entrypoint MCP** — host đăng ký file này (shim, KHÔNG đổi tên/di chuyển). |
-| `pyproject.toml` · `requirements*.txt` | Packaging + dependencies (pin & loose). |
-| [`policy.example.json`](policy.example.json) | Mẫu PII blocklist → copy thành `policy.json` (gitignored) theo dự án. |
-| `.env.example` | Mẫu cấu hình Power BI Service (service principal) → `.env` (gitignored). |
-| `LICENSE` | MIT + attribution quy trình/công cụ: Duc Nguyen. |
+| [`AGENTS.md`](AGENTS.md) | **The canonical guide for every agent** — repo map, Power BI working rules, multi-agent protocol (§4). Codex reads it natively. |
+| [`CLAUDE.md`](CLAUDE.md) · [`GEMINI.md`](GEMINI.md) | Pointers to AGENTS.md for Claude Code / Antigravity — edit content IN AGENTS.md. |
+| `README.md` / [`README.vi.md`](README.vi.md) | This file (English, canonical) / Vietnamese version. |
+| [`ROADMAP.md`](ROADMAP.md) | Positioning, 4-layer architecture, milestones (M0–M3 ✅, M4+ planned). |
+| [`install.ps1`](install.ps1) | **In-place installer** — venv + ADOMD/TOM probe + register MCP on 3 hosts + copy skills. Idempotent. |
+| [`uninstall.ps1`](uninstall.ps1) · [`pack.ps1`](pack.ps1) | Uninstall / pack a clean zip for another machine. |
+| `mcp_server_powerbi.py` | **MCP entrypoint** — hosts register this file (a shim, don't rename/move). |
+| `pyproject.toml` · `requirements*.txt` | Packaging + dependencies (pinned & loose). |
+| [`policy.example.json`](policy.example.json) | PII blocklist sample → copy to `policy.json` (gitignored) per project. |
+| `.env.example` | Power BI Service (service principal) config sample → `.env` (gitignored). |
+| `LICENSE` | MIT + attribution to KPIM & the author. |
 
-### `powerbi_agent/` — package MCP server (code chính)
+### `powerbi_agent/` — the MCP server package (core code)
 
-| File | Vai trò |
+| File | Role |
 |---|---|
-| `app.py` | Khởi tạo server: nạp ADOMD/TOM → FastMCP → đăng ký 11 tool. |
-| `tools_query.py` | Khám phá + truy vấn: `list_local_reports` · `list_tables` · `describe_table` · `execute_dax_local/_service` (đi qua policy). |
-| `policy.py` | **Tầng an toàn dữ liệu**: aggregate-only (mặc định BẬT) · PII blocklist · audit JSONL · trần dòng dimension. |
-| `tools_tom.py` | Ghi model qua TOM: `add_measure_local` · `add_relationship_local` (fallback đơn lẻ — bulk dùng modeling-mcp). |
-| `pbir.py` + `tools_template.py` | **Report layer**: đọc/ghi PBIR, `list_templates` · `apply_template` (clone-and-rebind) · `distill_template` (+ deep-sanitize). |
-| `tools_distill.py` | `distill_model_schema` — model → Markdown blueprint + Mermaid ERD. |
-| `adomd.py` · `discovery.py` · `util.py` | Dò DLL đa phiên bản SSMS · dò port Desktop · tiện ích chung. |
+| `app.py` | Boots the server: load ADOMD/TOM → FastMCP → register the 16 tools. |
+| `tools_query.py` | Discover + query: `list_local_reports` · `list_tables` · `describe_table` · `execute_dax_local/_service` (through policy). |
+| `policy.py` | **Data-safety layer**: aggregate-only (ON by default) · PII blocklist · JSONL audit · dimension row cap. |
+| `tools_tom.py` | Model writes via TOM: `add_measure_local` · `add_relationship_local` (single-shot fallback — bulk goes to modeling-mcp). |
+| `pbir.py` + `tools_template.py` | **Report layer**: read/write PBIR, `list_templates` · `apply_template` (clone-and-rebind) · `distill_template` (+ deep-sanitize). |
+| `tools_distill.py` · `tools_design.py` | `distill_model_schema` (model → blueprint + ERD) · `distill_report_design` (whole-report design scan). |
+| `knowledge.py` · `tools_knowledge.py` | Knowledge OS: Knowledge Dir resolution + `setup_knowledge`/`init_project`/`log_timeline`. |
+| `adomd.py` · `discovery.py` · `util.py` | Multi-version SSMS DLL probe · Desktop port discovery · shared utilities. |
 
-### `plugins/powerbi-agent/skills/` — 3 skill (NGUỒN DUY NHẤT, installer copy đi các host)
+### `plugins/powerbi-agent/skills/` — 4 skills (SINGLE SOURCE, copied to hosts by the installer)
 
-| Skill | Dùng khi | File quan trọng |
+| Skill | Use when | Key files |
 |---|---|---|
-| [`kpim-analysis`](plugins/powerbi-agent/skills/kpim-analysis/SKILL.md) | **Đầu dự án** — nhận dữ liệu → khảo sát, hỏi ngược, tài liệu hóa, kế hoạch | `templates/` (8 mẫu tài liệu + xlsx + theme.json + 5 mindmap) · `scripts/` (generator mindmap/xlsx) |
-| [`pbi-pipeline`](plugins/powerbi-agent/skills/pbi-pipeline/SKILL.md) | **Thực thi kỹ thuật** — 9 khâu Power Query → model → DAX → report | `references/` — dax / powerquery-m / sql best-practices · gotchas · powerbi-knowledge-map |
-| [`powerbi-mcp`](plugins/powerbi-agent/skills/powerbi-mcp/SKILL.md) | **Tra cứu tool** — cách dùng 16 tool + luật policy + phân vai với modeling-mcp | (1 file) |
-| [`pbi-knowledge`](plugins/powerbi-agent/skills/pbi-knowledge/SKILL.md) | **Knowledge OS** — luồng /pbi-* : dự án, đóng gói tri thức 4 trục, timeline, luật riêng tư | (1 file) |
+| [`kpim-analysis`](plugins/powerbi-agent/skills/kpim-analysis/SKILL.md) | **Project start** — data in → survey, ask, document, plan | `templates/` (8 doc templates + xlsx + theme.json + 5 mindmaps) · `scripts/` (mindmap/xlsx generators) |
+| [`pbi-pipeline`](plugins/powerbi-agent/skills/pbi-pipeline/SKILL.md) | **Technical execution** — 9 steps Power Query → model → DAX → report | `references/` — dax / powerquery-m / sql best-practices · gotchas · powerbi-knowledge-map |
+| [`powerbi-mcp`](plugins/powerbi-agent/skills/powerbi-mcp/SKILL.md) | **Tool reference** — how to use the 16 tools + policy rules + role split with modeling-mcp | (1 file) |
+| [`pbi-knowledge`](plugins/powerbi-agent/skills/pbi-knowledge/SKILL.md) | **Knowledge OS** — the /pbi-* flow: projects, 4-axis packaging, timeline, privacy rules | (1 file) |
 
-Plugin còn có [`commands/`](plugins/powerbi-agent/commands/) (6 lệnh /pbi-*) và [`agents/`](plugins/powerbi-agent/agents/) (pbi-knowledge-curator). Các skill link chéo nhau bằng đường dẫn tương đối anh–em (`../<skill>/SKILL.md`) — đúng cả trong repo lẫn sau khi cài vào host.
+The plugin also has [`commands/`](plugins/powerbi-agent/commands/) (6 `/pbi-*` commands) and [`agents/`](plugins/powerbi-agent/agents/) (pbi-knowledge-curator). Skills cross-link via sibling relative paths (`../<skill>/SKILL.md`) — valid both in-repo and once installed on a host.
 
-### Các folder còn lại
+### Remaining folders
 
-| Folder | Vai trò |
+| Folder | Role |
 |---|---|
-| [`.claude-plugin/`](.claude-plugin/marketplace.json) | Marketplace manifest — cài skills dạng plugin: `claude plugin marketplace add ducnguyen221/powerbi-agent` → `claude plugin install powerbi-agent@powerbi-agent` (chỉ skills, không venv/MCP). |
-| [`hosts/`](hosts/) | Hướng dẫn đăng ký RIÊNG từng host: [`claude/`](hosts/claude/README.md) · [`codex/`](hosts/codex/README.md) · [`antigravity/`](hosts/antigravity/README.md) (kèm snippet config tay). |
-| [`templates/`](templates/kpim-business-light/README.md) | **Kit visual báo cáo** cho `apply_template` — `kpim-business-light` (12 block sanitized). ≠ `skills/kpim-analysis/templates/` (mẫu TÀI LIỆU). |
-| [`scripts/`](scripts/) | Tiện ích dev: `cli.py` (debug DAX không cần MCP: `list`/`tables`/`query`) · `test_mcp_local.py` (smoke test kết nối). |
-| [`docs/`](docs/) | Website GitHub Pages: `index.html` (landing) · [`INSTALL.html`](docs/INSTALL.html) (hướng dẫn cài chi tiết — [bản web](https://ducnguyen.vn/powerbi-agent/INSTALL.html)) · [`UAT-REPORT.md`](docs/UAT-REPORT.md) (17 ca UAT trên dashboard thật). |
-| `tests/` + `.github/workflows/` | Unit tests + CI (ruff + pytest, windows-latest). |
+| [`.claude-plugin/`](.claude-plugin/marketplace.json) | Marketplace manifest — install skills as a plugin: `claude plugin marketplace add ducnguyen221/powerbi-agent` → `claude plugin install powerbi-agent@powerbi-agent` (skills only, no venv/MCP). |
+| [`hosts/`](hosts/) | Per-host registration guides: [`claude/`](hosts/claude/README.md) · [`codex/`](hosts/codex/README.md) · [`antigravity/`](hosts/antigravity/README.md) (with manual config snippets). |
+| [`templates/`](templates/kpim-business-light/README.md) | **Visual report kits** for `apply_template` — `kpim-business-light` (12 sanitized blocks). ≠ `skills/kpim-analysis/templates/` (DOCUMENT templates). |
+| [`scripts/`](scripts/) | Dev utilities: `cli.py` (debug DAX without the MCP: `list`/`tables`/`query`) · `test_mcp_local.py` (connection smoke test) · `build_template_gallery.py`. |
+| [`docs/`](docs/) | GitHub Pages site: `index.html` (landing) + `feature/` `instruction/` `template/` `install/` · [`INSTALL.html`](docs/INSTALL.html) · [`UAT-REPORT.md`](docs/UAT-REPORT.md). |
+| `tests/` + `.github/workflows/` | Unit + installer tests + CI (ruff + pytest, windows-latest). |
 
-Điều phối nhiều agent cùng lúc (Claude build · Codex review · Antigravity tài liệu hóa):
-xem **[AGENTS.md](AGENTS.md) §4** — single-writer, lock convention, artifact bàn giao chung.
+Coordinating many agents at once (Claude builds · Codex reviews · Antigravity documents):
+see **[AGENTS.md](AGENTS.md) §4** — single-writer, lock convention, shared handoff artifacts.
 
-## Bảo mật & vận hành
+## Security & operations
 
-- `.env` (service principal cloud) không bao giờ bị ghi đè/commit — chỉ tạo từ `.env.example`.
-- Tool GHI model nhắc rõ trong docstring; ghi REPORT chỉ khi file .pbip đóng (tool tự cảnh báo).
-- Gỡ: `.\uninstall.ps1` (giữ file) · `.\uninstall.ps1 -RemoveVenv`.
+- `.env` (cloud service principal) is never overwritten/committed — created only from `.env.example`.
+- Model-write tools warn in their docstrings; REPORT writes only when the .pbip is closed (the tool warns).
+- Uninstall: `.\uninstall.ps1` (keeps files) · `.\uninstall.ps1 -RemoveVenv`.
 
-## Tác giả & Credit
+## Authors & credit
 
-**Quy trình phân tích KPIM, bộ công cụ (MCP server + tools), template và kỹ thuật** trong repo này được thiết kế và xây dựng bởi **Duc Nguyen (Nguyễn Quang Đức — [ducnguyen221](https://github.com/ducnguyen221))** — để AI Agent có thể **làm việc phân tích dữ liệu như một chuyên gia**: khảo sát, tài liệu hóa, chuẩn hóa và tự động hóa việc xây dựng báo cáo Power BI.
+The **KPIM analysis process, tooling (MCP server + tools), templates and techniques** in this repo were
+built by **[KPIM](https://kpim.vn)** (many experts collaborating), technical lead & development by
+**Duc Nguyen (Nguyễn Quang Đức — [ducnguyen221](https://github.com/ducnguyen221))** — so an AI Agent can
+**do data analysis like an expert**. Shared free with the community and students.
 
-Nếu bạn dùng lại quy trình / template / công cụ này, vui lòng **giữ credit tới Duc Nguyen**.
+If you reuse the process / templates / tools, please **keep the credit to KPIM & Duc Nguyen**.
 
 ## License
 
-**MIT** — © 2026 Duc Nguyen ([ducnguyen221](https://github.com/ducnguyen221)). Xem `LICENSE`.
-Tự do dùng/sửa/phân phối theo MIT; đề nghị ghi nhận credit tác giả quy trình & công cụ.
+**MIT** — © 2026 KPIM ([kpim.vn](https://kpim.vn)) & Duc Nguyen ([ducnguyen221](https://github.com/ducnguyen221)). See `LICENSE`.
+Free to use/modify/distribute under MIT; attribution to KPIM & the process author is appreciated.

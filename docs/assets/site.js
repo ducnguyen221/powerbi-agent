@@ -83,3 +83,38 @@
   window.addEventListener('mouseout',function(){mouse.x=-9999;mouse.y=-9999;});
   resize(); if(!reduce)draw();
 })();
+
+// ===== i18n language toggle =====
+(function(){
+  var KEY='pbi-lang';
+  function cur(){ return localStorage.getItem(KEY) || document.documentElement.getAttribute('data-lang') || 'vi'; }
+  function apply(l){
+    document.documentElement.setAttribute('data-lang', l);
+    try{ localStorage.setItem(KEY, l); }catch(e){}
+    document.querySelectorAll('.langsel').forEach(function(sel){
+      var lbl=sel.querySelector('.langsel-cur'); if(lbl) lbl.textContent = (l==='en'?'EN':'VN');
+      sel.querySelectorAll('li button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-set')===l); });
+    });
+  }
+  // dựng UI trong mọi header có .nav
+  document.querySelectorAll('header.site .nav').forEach(function(nav){
+    if(nav.querySelector('.langsel')) return;
+    var sel=document.createElement('div'); sel.className='langsel';
+    sel.innerHTML='<button aria-haspopup="listbox" aria-label="Language">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>'+
+      '<span class="langsel-cur">VN</span>'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>'+
+      '<ul role="listbox">'+
+      '<li><button data-set="vi"><span class="fl">🇻🇳</span> Tiếng Việt</button></li>'+
+      '<li><button data-set="en"><span class="fl">🇬🇧</span> English</button></li></ul>';
+    // chèn sau cùng trong nav (sau nút GitHub)
+    nav.appendChild(sel);
+    var btn=sel.querySelector('button');
+    btn.addEventListener('click',function(e){ e.stopPropagation(); sel.classList.toggle('open'); });
+    sel.querySelectorAll('li button').forEach(function(b){
+      b.addEventListener('click',function(){ apply(b.getAttribute('data-set')); sel.classList.remove('open'); });
+    });
+    document.addEventListener('click',function(){ sel.classList.remove('open'); });
+  });
+  apply(cur());
+})();

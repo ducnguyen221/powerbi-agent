@@ -128,7 +128,8 @@ Luật: (1) gọi `knowledge_status` TRƯỚC mọi quy trình tri thức — ch
 - `.ps1` phải UTF-8 **có BOM** (PowerShell 5.1 + tiếng Việt); JSON PBIR ghi UTF-8 **không BOM**.
 - KHÔNG commit: `.env`, `policy.json`, `.venv/`, kit chứa binding nghiệp vụ thật (sanitize trước),
   schema model khách (distill ghi ra NGOÀI repo), tham chiếu máy cá nhân.
-- Docs công khai (README/INSTALL/docs/) phải machine-agnostic — không đường dẫn/tên máy riêng.
+- Docs công khai (README/INSTALL/docs/) phải machine-agnostic — không đường dẫn/tên máy riêng, không tên khách hàng (dùng ví dụ generic như "KPIM Mart").
+- **Song ngữ:** `README.md` = English (canonical). Sửa README.md thì **mirror sang `README.vi.md` TRONG CÙNG commit**. Các doc khác (AGENTS/ROADMAP/skills) English-canonical, KHÔNG tạo bản `-VN` (tránh drift). Website `docs/` mang đầy đủ EN+VI qua toggle ngôn ngữ (`docs/assets/site.js`).
 
 ## 6. File nào host nào đọc
 
