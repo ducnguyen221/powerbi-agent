@@ -9,19 +9,24 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Hosts claude
 ```
 
 Installer merge server `powerbi-mcp-bridge` vào `~/.claude.json` (user scope, backup `.bak`,
-không đụng server khác) và copy 3 skill vào `~/.claude/skills/`. **Restart Claude Code** sau cài.
+không đụng server khác), copy 4 skill vào `~/.claude/skills/` và 6 lệnh `/pbi-*` vào
+`~/.claude/commands/`. **Restart Claude Code** sau cài.
 
 Verify: `claude mcp list` → `powerbi-mcp-bridge … ✔ Connected`.
 
-## Cách 2 — Chỉ skills (dạng plugin, không MCP)
+## Cách 2 — Cài dạng PLUGIN (hiện trong trình quản lý plugin của Claude Desktop)
 
 ```bash
 claude plugin marketplace add ducnguyen221/powerbi-agent
 claude plugin install powerbi-agent@powerbi-agent
 ```
 
-Dùng khi chỉ cần quy trình/kiến thức (kpim-analysis, pbi-pipeline) mà chưa cần tool DAX.
-Muốn tool → quay lại Cách 1.
+Plugin `powerbi-agent` xuất hiện trong danh sách plugin của app; nạp **4 skill + 6 lệnh /pbi-* +
+agent `pbi-knowledge-curator`** (Claude tự auto-discover `commands/` + `agents/`). Dùng khi chỉ cần
+quy trình/kiến thức mà chưa cần 16 tool DAX.
+
+> Chỉ cài plugin = CHƯA có MCP server (16 tool). Muốn đủ tool → Cách 1.
+> Đừng chạy CẢ Cách 1 (copy skill) LẪN Cách 2 (plugin) — skill sẽ bị nạp 2 lần.
 
 ## Khuyến nghị kèm theo
 

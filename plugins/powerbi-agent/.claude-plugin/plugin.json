@@ -1,12 +1,16 @@
 {
   "name": "powerbi-agent",
   "version": "0.3.0",
-  "description": "Skills for AI Agents working directly with Power BI: kpim-analysis (business analysis process), pbi-pipeline (9-step technical pipeline), powerbi-mcp (tool guide + data-safety policy). Requires the powerbi-agent MCP server (install.ps1 in repo root).",
+  "description": "Turn your AI Agent into a Power BI analyst. 4 skills (kpim-analysis · pbi-pipeline · powerbi-mcp · pbi-knowledge), 6 /pbi-* commands, and the pbi-knowledge-curator agent. For the 16 MCP tools (DAX/model/report/knowledge) run install.ps1 in the repo root — this plugin ships the workflows & knowledge layer. Built by KPIM (kpim.vn), shared free.",
   "author": {
-    "name": "Duc Nguyen",
-    "email": "ducnguyen.ams@gmail.com"
+    "name": "KPIM",
+    "email": "ducnguyen.ams@gmail.com",
+    "url": "https://kpim.vn"
   },
+  "homepage": "https://ducnguyen.vn/powerbi-agent/",
+  "repository": "https://github.com/ducnguyen221/powerbi-agent",
   "license": "MIT",
-  "keywords": ["powerbi", "dax", "mcp", "data-analysis", "pbir", "report-template"],
+  "keywords": ["powerbi", "dax", "mcp", "data-analysis", "pbir", "report-template", "kpim", "bi"],
   "skills": "./skills/"
 }
+

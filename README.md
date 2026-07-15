@@ -48,6 +48,21 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 Requirements: Windows (Power BI Desktop is Windows-only) · Python 3.11+ · ADOMD.NET
 (bundled with SSMS; or install the [Analysis Services client libraries](https://learn.microsoft.com/en-us/analysis-services/client-libraries)).
 
+### Or install as a plugin (shows in the app's plugin manager)
+
+The same `.claude-plugin/marketplace.json` works for **both Claude Code and Codex** — installs the
+4 skills + 6 `/pbi-*` commands + the curator agent as a managed plugin (no MCP server; run
+install.ps1 for the 16 tools). Antigravity has no plugin store — its skills load from the skills folder.
+
+```bash
+# Claude Code
+claude plugin marketplace add ducnguyen221/powerbi-agent && claude plugin install powerbi-agent@powerbi-agent
+# Codex CLI
+codex plugin marketplace add https://github.com/ducnguyen221/powerbi-agent && codex plugin add powerbi-agent@powerbi-agent
+```
+
+Per-host details: [`hosts/`](hosts/) (claude · codex · antigravity).
+
 ## 🧭 Getting started — 3 steps
 
 1. **Install** (command above) → restart the host → the agent gains 16 tools + 4 skills + 6 commands.

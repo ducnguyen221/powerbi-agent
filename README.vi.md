@@ -47,6 +47,21 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 Yêu cầu: Windows (Power BI Desktop chỉ có trên Windows) · Python 3.11+ · ADOMD.NET
 (có sẵn nếu cài SSMS; hoặc [Analysis Services client libraries](https://learn.microsoft.com/en-us/analysis-services/client-libraries)).
 
+### Hoặc cài dạng plugin (hiện trong trình quản lý plugin của app)
+
+Cùng một `.claude-plugin/marketplace.json` chạy cho **cả Claude Code lẫn Codex** — cài 4 skill +
+6 lệnh `/pbi-*` + agent curator dạng plugin (chưa gồm MCP server; chạy install.ps1 để có 16 tool).
+Antigravity không có plugin store — skill nạp từ thư mục skills.
+
+```bash
+# Claude Code
+claude plugin marketplace add ducnguyen221/powerbi-agent && claude plugin install powerbi-agent@powerbi-agent
+# Codex CLI
+codex plugin marketplace add https://github.com/ducnguyen221/powerbi-agent && codex plugin add powerbi-agent@powerbi-agent
+```
+
+Chi tiết từng host: [`hosts/`](hosts/) (claude · codex · antigravity).
+
 ## 🧭 Bắt đầu thế nào — 3 bước
 
 1. **Cài** (lệnh ở trên) → restart host → agent có 16 tool + 4 skill + 6 lệnh.

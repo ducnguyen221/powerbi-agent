@@ -2,6 +2,10 @@
 
 Antigravity đọc **`GEMINI.md`** (trỏ về `AGENTS.md`) — mọi luật làm việc ở [`AGENTS.md`](../../AGENTS.md).
 
+> ℹ️ **Antigravity KHÔNG có trình quản lý plugin/marketplace** (khác Claude & Codex). Vì vậy
+> "plugin" ở đây = **skill nạp từ thư mục** `~/.gemini/antigravity/skills/`. Installer copy skill
+> vào đó; Antigravity tự hiện chúng khi khởi động (không có mục "plugin" riêng trong app).
+
 ## Cài (Antigravity không có plugin store — dùng installer)
 
 ```powershell
@@ -25,7 +29,7 @@ Installer làm 2 việc:
 }
 ```
 
-2. Copy 3 skill (kèm `references/` + `templates/` + `scripts/`) vào `~/.gemini/antigravity/skills/`.
+2. Copy 4 skill (kèm `references/` + `templates/` + `scripts/`) vào `~/.gemini/antigravity/skills/`.
 
 **Restart Antigravity** sau cài để nhận tool + skill.
 

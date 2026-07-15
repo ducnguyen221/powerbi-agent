@@ -11,7 +11,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Hosts codex
 ```
 
 Installer thêm block `[mcp_servers.powerbi-mcp-bridge]` vào `~/.codex/config.toml`
-(backup `.bak`) và copy 3 skill vào `~/.codex/skills/`. **Restart phiên Codex** sau cài.
+(backup `.bak`) và copy 4 skill vào `~/.codex/skills/`. **Restart phiên Codex** sau cài.
 
 Đăng ký tay (nếu muốn tự làm):
 
@@ -23,12 +23,20 @@ args    = ["C:/Users/<you>/.mcp/powerbi-mcp/mcp_server_powerbi.py"]
 env     = { PYTHONUNBUFFERED = "1" }
 ```
 
-## Cách 2 — Chỉ skills (dạng plugin marketplace git)
+## Cách 2 — Cài dạng PLUGIN (hiện trong `codex plugin list` / app)
+
+Codex đọc **cùng một `.claude-plugin/marketplace.json`** với Claude — không cần manifest riêng.
+Cài để plugin xuất hiện trong trình quản lý plugin của Codex (4 skill + 6 lệnh `/pbi-*` + agent
+`pbi-knowledge-curator` được nạp tự động):
 
 ```bash
 codex plugin marketplace add https://github.com/ducnguyen221/powerbi-agent
 codex plugin add powerbi-agent@powerbi-agent
+codex plugin list   # thấy: powerbi-agent@powerbi-agent  installed, enabled  0.3.0
 ```
+
+> Chỉ cài plugin = có skill/lệnh, CHƯA có 16 tool MCP. Muốn đủ tool → chạy install.ps1 (Cách 1).
+> Đừng chạy CẢ Cách 1 (copy skill) LẪN Cách 2 (plugin) cùng lúc — skill sẽ bị nạp 2 lần.
 
 ## Khuyến nghị kèm theo
 
